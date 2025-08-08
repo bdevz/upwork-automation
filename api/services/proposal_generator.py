@@ -50,16 +50,32 @@ async def score_proposal_quality(proposal_text: str, job_description: str) -> Di
     """
     Scores the quality of a proposal against a job description.
     """
-    prompt = f"""
-    Evaluate the following proposal based on the job description and the quality factors: {', '.join(ProposalTemplateConfig.QUALITY_FACTORS)}.
-    Return a JSON object with 'quality_score' (0.0 to 1.0) and 'optimization_suggestions' (a list of strings).
+    prompt = f'''
+    Evaluate the following proposal based on the job description and the quality factors: {", ".join(ProposalTemplateConfig.QUALITY_FACTORS)}.
+    Return a JSON object with "quality_score" (a float between 0.0 and 1.0) and "optimization_suggestions" (a list of strings).
 
     **Job Description:**
     {job_description}
 
     **Proposal Text:**
     {proposal_text}
-    """
-    # This is a placeholder for the actual implementation
-    return {"quality_score": 0.85, "optimization_suggestions": ["Consider adding more specific examples of your work."]}
+    '''
+    try:
+        response = await client.chat.completions.create(
+            model=settings.openai_model,
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+            temperature=0.2,
+        )
+        result = json.loads(response.choices[0].message.content)
+        return {
+            "quality_score": result.get("quality_score", 0.0),
+            "optimization_suggestions": result.get("optimization_suggestions", []),
+        }
+    except json.JSONDecodeError:
+        logger.error("Failed to decode JSON from OpenAI response.")
+    except Exception as e:
+        logger.error(f"Error scoring proposal quality: {e}")
+    return {"quality_score": 0.0, "optimization_suggestions": ["Error scoring proposal."]}
+
 
