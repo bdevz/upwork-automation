@@ -1,3 +1,112 @@
+"""
+Service for submitting applications using a Director-orchestrated workflow.
+"""
+import asyncio
+from typing import Any, Dict, List, Optional
+
+from shared.config import settings
+from shared.models import Job, Proposal
+from shared.utils import setup_logging
+from browser_automation.director import DirectorOrchestrator
+from browser_automation.browserbase_client import BrowserbaseClient
+from browser_automation.stagehand_controller import StagehandController
+
+logger = setup_logging("application-submission-service")
+
+
+class ApplicationSubmissionService:
+    """
+    Orchestrates the submission of a single application using a Director workflow.
+    """
+
+    def __init__(
+        self,
+        director: Optional[DirectorOrchestrator] = None,
+        browserbase_client: Optional[BrowserbaseClient] = None,
+        stagehand_controller: Optional[StagehandController] = None,
+    ):
+        self.browserbase_client = browserbase_client or BrowserbaseClient()
+        self.stagehand_controller = stagehand_controller or StagehandController(
+            browserbase_client=self.browserbase_client
+        )
+        self.director = director or DirectorOrchestrator(
+            browserbase_client=self.browserbase_client,
+            stagehand_controller=self.stagehand_controller,
+        )
+
+    async def submit_application(
+        self, job: Job, proposal: Proposal
+    ) -> Dict[str, Any]:
+        """
+        Submits a single application by creating and executing a Director workflow.
+
+        Args:
+            job: The job to apply for.
+            proposal: The proposal to submit.
+
+        Returns:
+            A dictionary containing the workflow execution result.
+        """
+        logger.info(f"Creating application submission workflow for job: {job.id}")
+
+        workflow_id = await self.create_application_submission_workflow(
+            job, proposal
+        )
+        result = await self.director.execute_workflow(workflow_id)
+
+        logger.info(
+            f"Workflow for job {job.id} completed with status: {result['status']}"
+        )
+        return result
+
+    async def create_application_submission_workflow(
+        self, job: Job, proposal: Proposal
+    ) -> str:
+        """
+        Defines the workflow for submitting a single application.
+        """
+        steps = [
+            {
+                "id": "validate_proposal",
+                "name": "Validate Proposal Data",
+                "action": "validate_proposals",
+                "parameters": {"proposals": [proposal.dict()]},
+            },
+            {
+                "id": "calculate_bid",
+                "name": "Calculate Bid Amount",
+                "action": "calculate_bid",
+                "parameters": {"job": job.dict()},
+                "dependencies": ["validate_proposal"],
+            },
+            {
+                "id": "acquire_session",
+                "name": "Acquire Submission Session",
+                "action": "acquire_sessions",
+                "parameters": {"session_type": "proposal_submission", "count": 1},
+                "dependencies": ["calculate_bid"],
+            },
+            {
+                "id": "submit_application",
+                "name": "Submit Application",
+                "action": "submit_application",
+                "parameters": {"job": job.dict(), "proposal": proposal.dict()},
+                "dependencies": ["acquire_session"],
+            },
+            {
+                "id": "verify_submission",
+                "name": "Verify Submission",
+                "action": "verify_submissions",
+                "parameters": {},
+                "dependencies": ["submit_application"],
+            },
+        ]
+
+        return await self.director.create_workflow(
+            name=f"Application Submission for Job {job.id}",
+            description=f"Full workflow to submit a proposal for '{job.title}'",
+            steps=steps,
+        )
 from typing import Any, Dict, List, Optional
 from browser_automation.director import DirectorOrchestrator
 from browser_automation.session_manager import SessionManager
@@ -86,4 +195,5 @@ class ApplicationSubmissionService:
         )
 
         return await self.director.execute_workflow(workflow_id)
+
 
