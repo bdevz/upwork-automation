@@ -1,5 +1,5 @@
 """
-FastAPI main application for Upwork Automation System
+FastAPI main application for Ardan Automation System
 """
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
@@ -14,14 +14,14 @@ from routers import jobs, proposals, applications, browser, system, metrics
 
 
 # Setup logging
-logger = setup_logging("upwork-automation-api", settings.log_level)
+logger = setup_logging("ardan-automation-api", settings.log_level)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan management"""
     # Startup
-    logger.info("Starting Upwork Automation API...")
+    logger.info("Starting Ardan Automation API...")
     
     try:
         # Validate configuration
@@ -40,14 +40,14 @@ async def lifespan(app: FastAPI):
         raise
     
     # Shutdown
-    logger.info("Shutting down Upwork Automation API...")
+    logger.info("Shutting down Ardan Automation API...")
     await close_db()
     logger.info("API shutdown complete")
 
 
 # Create FastAPI application
 app = FastAPI(
-    title="Upwork Automation API",
+    title="Ardan Automation API",
     description="Automated job application system for Salesforce Agentforce Developer positions",
     version="1.0.0",
     lifespan=lifespan
@@ -67,7 +67,7 @@ app.add_middleware(
 @app.get("/health")
 async def health_check():
     """Health check endpoint for monitoring"""
-    return {"status": "healthy", "service": "upwork-automation-api"}
+    return {"status": "healthy", "service": "ardan-automation-api"}
 
 
 # Root endpoint
@@ -75,7 +75,7 @@ async def health_check():
 async def root():
     """Root endpoint with API information"""
     return {
-        "message": "Upwork Automation API",
+        "message": "Ardan Automation API",
         "version": "1.0.0",
         "docs": "/docs",
         "health": "/health"

@@ -1,5 +1,5 @@
 """
-Configuration management for the Upwork Automation System
+Configuration management for the Ardan Automation System
 """
 import os
 from typing import List, Optional
@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     
     # Database Configuration
     database_url: str = Field(
-        default="postgresql://upwork_user:upwork_pass@localhost:5432/upwork_automation",
+        default="postgresql://ardan_user:ardan_pass@localhost:5432/ardan_automation",
         env="DATABASE_URL"
     )
     
@@ -97,10 +97,10 @@ class BrowserAutomationConfig:
     MAX_RETRIES = 3
     RETRY_DELAY = 5.0  # seconds
     
-    # Upwork Specific
-    UPWORK_BASE_URL = "https://www.upwork.com"
-    UPWORK_LOGIN_URL = "https://www.upwork.com/ab/account-security/login"
-    UPWORK_JOBS_URL = "https://www.upwork.com/nx/search/jobs"
+    # Ardan Specific
+    ARDAN_BASE_URL = "https://www.ardan.com"
+    ARDAN_LOGIN_URL = "https://www.ardan.com/ab/account-security/login"
+    ARDAN_JOBS_URL = "https://www.ardan.com/nx/search/jobs"
 
 
 class ProposalTemplateConfig:

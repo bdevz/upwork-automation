@@ -1,4 +1,4 @@
--- Upwork Automation Database Schema
+-- Ardan Automation Database Schema
 -- Initialize database with core tables for jobs, proposals, applications, and system configuration
 
 -- Enable UUID extension
@@ -19,7 +19,7 @@ CREATE TYPE application_status AS ENUM ('pending', 'submitted', 'viewed', 'inter
 -- Jobs table
 CREATE TABLE jobs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    upwork_job_id VARCHAR(255) UNIQUE,
+    ardan_job_id VARCHAR(255) UNIQUE,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     budget_min DECIMAL(10,2),
@@ -65,7 +65,7 @@ CREATE TABLE applications (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     job_id UUID REFERENCES jobs(id) ON DELETE CASCADE,
     proposal_id UUID REFERENCES proposals(id) ON DELETE CASCADE,
-    upwork_application_id VARCHAR(255),
+    ardan_application_id VARCHAR(255),
     submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     status application_status DEFAULT 'pending',
     client_response TEXT,

@@ -1,4 +1,4 @@
-# Upwork Automation System Setup Guide
+# Ardan Automation System Setup Guide
 
 ## Prerequisites
 
@@ -33,7 +33,7 @@ Before starting, obtain the following:
 1. **Clone and Setup**
    ```bash
    git clone <repository>
-   cd upwork-automation
+   cd ardan-automation
    cp .env.example .env
    ```
 
@@ -61,9 +61,9 @@ Before starting, obtain the following:
 
 ### Database
 - PostgreSQL runs on port 5432
-- Database: `upwork_automation`
-- User: `upwork_user`
-- Password: `upwork_pass`
+- Database: `ardan_automation`
+- User: `ardan_user`
+- Password: `ardan_pass`
 
 ### Redis
 - Runs on port 6379

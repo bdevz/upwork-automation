@@ -1,6 +1,6 @@
 # Browser Automation - Browserbase Integration and Session Management
 
-This module implements comprehensive Browserbase integration with advanced session management capabilities for the Upwork Automation System.
+This module implements comprehensive Browserbase integration with advanced session management capabilities for the Ardan Automation System.
 
 ## Overview
 
@@ -85,7 +85,7 @@ Flexible configuration system for different session requirements:
 from browserbase_client import SessionConfig
 
 config = SessionConfig(
-    project_id="upwork-automation",
+    project_id="ardan-automation",
     stealth=True,
     proxies=True,
     timeout=1800,  # 30 minutes
@@ -194,7 +194,7 @@ async def basic_example():
     
     # Store context
     await client.store_session_context(session_id, "page_state", {
-        "current_url": "https://www.upwork.com/nx/search/jobs",
+        "current_url": "https://www.ardan.com/nx/search/jobs",
         "search_filters": ["Salesforce", "Agentforce"]
     })
     
@@ -368,4 +368,4 @@ pip install aiohttp pydantic pydantic-settings
 
 ## License
 
-This module is part of the Upwork Automation System and follows the same licensing terms.
+This module is part of the Ardan Automation System and follows the same licensing terms.

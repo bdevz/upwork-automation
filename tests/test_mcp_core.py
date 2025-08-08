@@ -42,9 +42,9 @@ class TestMCPCoreLogic:
     def sample_page_data(self):
         """Sample page data for testing"""
         return {
-            "url": "https://www.upwork.com/nx/search/jobs/?q=Salesforce%20Agentforce",
-            "title": "Salesforce Agentforce Jobs - Upwork",
-            "content": "Find Salesforce Agentforce jobs on Upwork. Browse job listings and apply to projects.",
+            "url": "https://www.ardan.com/nx/search/jobs/?q=Salesforce%20Agentforce",
+            "title": "Salesforce Agentforce Jobs - Ardan",
+            "content": "Find Salesforce Agentforce jobs on Ardan. Browse job listings and apply to projects.",
         }
     
     @pytest.mark.asyncio
@@ -82,7 +82,7 @@ class TestMCPCoreLogic:
         """Test fallback strategy generation"""
         context = PageContext(
             session_id="test_session",
-            url="https://www.upwork.com/jobs/search",
+            url="https://www.ardan.com/jobs/search",
             title="Job Search",
             page_type="job_search",
             content_hash="test_hash",
@@ -337,7 +337,7 @@ class TestMCPCoreLogic:
         
         # Test classification
         classification_result = await ai_client.analyze(
-            "URL: https://upwork.com/jobs/search Title: Job Search"
+            "URL: https://ardan.com/jobs/search Title: Job Search"
         )
         assert "classification" in classification_result
         assert classification_result["classification"] in [

@@ -27,7 +27,7 @@ class TestJobDiscoveryLogic:
         payment_verified=True,
         skills=None,
         client_name="Test Client",
-        upwork_job_id=None
+        ardan_job_id=None
     ):
         """Create a test job with specified parameters"""
         if skills is None:
@@ -35,7 +35,7 @@ class TestJobDiscoveryLogic:
         
         job = Job(
             id=uuid4(),
-            upwork_job_id=upwork_job_id or f"job-{uuid4().hex[:8]}",
+            ardan_job_id=ardan_job_id or f"job-{uuid4().hex[:8]}",
             title=title,
             description=description,
             hourly_rate=Decimal(str(hourly_rate)),
@@ -154,7 +154,7 @@ class TestJobDiscoveryLogic:
         """Remove duplicate jobs using ID and content hash checking"""
         original_count = len(jobs)
         seen_hashes = set()
-        seen_upwork_ids = set()
+        seen_ardan_ids = set()
         deduplicated_jobs = []
         duplicate_pairs = []
         
@@ -162,10 +162,10 @@ class TestJobDiscoveryLogic:
             is_duplicate = False
             duplicate_reason = ""
             
-            # Check Upwork job ID
-            if job.upwork_job_id and job.upwork_job_id in seen_upwork_ids:
+            # Check Ardan job ID
+            if job.ardan_job_id and job.ardan_job_id in seen_ardan_ids:
                 is_duplicate = True
-                duplicate_reason = f"Duplicate Upwork ID: {job.upwork_job_id}"
+                duplicate_reason = f"Duplicate Ardan ID: {job.ardan_job_id}"
             
             # Check content hash
             elif job.content_hash and job.content_hash in seen_hashes:
@@ -176,8 +176,8 @@ class TestJobDiscoveryLogic:
                 duplicate_pairs.append((str(job.id), duplicate_reason))
             else:
                 deduplicated_jobs.append(job)
-                if job.upwork_job_id:
-                    seen_upwork_ids.add(job.upwork_job_id)
+                if job.ardan_job_id:
+                    seen_ardan_ids.add(job.ardan_job_id)
                 if job.content_hash:
                     seen_hashes.add(job.content_hash)
         
@@ -284,11 +284,11 @@ class TestJobDiscoveryLogic:
         # Hash should be MD5 length
         assert len(hash1) == 32
 
-    def test_job_deduplication_by_upwork_id(self):
-        """Test deduplication by Upwork job ID"""
-        job1 = self.create_test_job(title="Job 1", upwork_job_id="job-123")
-        job2 = self.create_test_job(title="Job 2", upwork_job_id="job-123")  # Same ID
-        job3 = self.create_test_job(title="Job 3", upwork_job_id="job-456")  # Different ID
+    def test_job_deduplication_by_ardan_id(self):
+        """Test deduplication by Ardan job ID"""
+        job1 = self.create_test_job(title="Job 1", ardan_job_id="job-123")
+        job2 = self.create_test_job(title="Job 2", ardan_job_id="job-123")  # Same ID
+        job3 = self.create_test_job(title="Job 3", ardan_job_id="job-456")  # Different ID
         
         # Generate content hashes
         job1.content_hash = self.generate_content_hash(job1)
@@ -309,14 +309,14 @@ class TestJobDiscoveryLogic:
             title="Salesforce Developer",
             description="Salesforce work",
             client_name="Client A",
-            upwork_job_id="job-123"
+            ardan_job_id="job-123"
         )
         
         job2 = self.create_test_job(
             title="Salesforce Developer",  # Same content
             description="Salesforce work",
             client_name="Client A",
-            upwork_job_id="job-456"  # Different ID
+            ardan_job_id="job-456"  # Different ID
         )
         
         # Generate same content hash

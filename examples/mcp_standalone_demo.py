@@ -465,16 +465,16 @@ async def demo_mcp_functionality():
         {
             "name": "Job Search",
             "data": {
-                "url": "https://www.upwork.com/nx/search/jobs/?q=Salesforce",
-                "title": "Salesforce Jobs - Upwork",
-                "content": "Find Salesforce jobs on Upwork"
+                "url": "https://www.ardan.com/nx/search/jobs/?q=Salesforce",
+                "title": "Salesforce Jobs - Ardan",
+                "content": "Find Salesforce jobs on Ardan"
             },
             "goal": "search_jobs"
         },
         {
             "name": "Job Details",
             "data": {
-                "url": "https://www.upwork.com/jobs/~123456",
+                "url": "https://www.ardan.com/jobs/~123456",
                 "title": "Salesforce Developer Needed",
                 "content": "We need a Salesforce developer for our project"
             },
@@ -483,7 +483,7 @@ async def demo_mcp_functionality():
         {
             "name": "Application Form",
             "data": {
-                "url": "https://www.upwork.com/ab/proposals/job/123456",
+                "url": "https://www.ardan.com/ab/proposals/job/123456",
                 "title": "Submit Proposal",
                 "content": "Submit your proposal for this job"
             },
@@ -516,7 +516,7 @@ async def demo_mcp_functionality():
     context = await mcp.analyze_page_context(
         session_id,
         {
-            "url": "https://www.upwork.com/jobs/search",
+            "url": "https://www.ardan.com/jobs/search",
             "title": "Job Search",
             "content": "Search for jobs"
         },

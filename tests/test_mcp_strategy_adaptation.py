@@ -59,8 +59,8 @@ class TestMCPStrategyAdaptation:
         """Sample job search page context"""
         return PageContext(
             session_id="test_session",
-            url="https://www.upwork.com/nx/search/jobs/",
-            title="Find Jobs - Upwork",
+            url="https://www.ardan.com/nx/search/jobs/",
+            title="Find Jobs - Ardan",
             page_type="job_search",
             content_hash="abc123",
             interactive_elements=[
@@ -79,8 +79,8 @@ class TestMCPStrategyAdaptation:
         """Sample application form page context"""
         return PageContext(
             session_id="test_session",
-            url="https://www.upwork.com/ab/proposals/job/123456",
-            title="Submit Proposal - Upwork",
+            url="https://www.ardan.com/ab/proposals/job/123456",
+            title="Submit Proposal - Ardan",
             page_type="application_form",
             content_hash="def456",
             interactive_elements=[

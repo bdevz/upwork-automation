@@ -29,8 +29,8 @@ browserbase_client = import_from_path("browserbase_client", base_path / "browser
 
 # Import classes directly
 StagehandController = stagehand_controller.StagehandController
-UpworkJobSearchController = stagehand_controller.UpworkJobSearchController
-UpworkApplicationController = stagehand_controller.UpworkApplicationController
+ArdanJobSearchController = stagehand_controller.ArdanJobSearchController
+ArdanApplicationController = stagehand_controller.ArdanApplicationController
 NavigationStrategy = stagehand_controller.NavigationStrategy
 ExtractionType = stagehand_controller.ExtractionType
 NavigationResult = stagehand_controller.NavigationResult
@@ -79,8 +79,8 @@ async def mock_stagehand():
     """Mock Stagehand instance for testing"""
     stagehand = Mock()
     stagehand.page = Mock()
-    stagehand.page.url = "https://www.upwork.com"
-    stagehand.page.title = AsyncMock(return_value="Upwork - Test Page")
+    stagehand.page.url = "https://www.ardan.com"
+    stagehand.page.title = AsyncMock(return_value="Ardan - Test Page")
     stagehand.page.goto = AsyncMock()
     stagehand.page.wait_for_load_state = AsyncMock()
     stagehand.page.reload = AsyncMock()
@@ -134,13 +134,13 @@ class TestStagehandController:
         
         result = await stagehand_controller.intelligent_navigate(
             "test_session",
-            "https://www.upwork.com/jobs",
+            "https://www.ardan.com/jobs",
             NavigationStrategy.DIRECT_URL
         )
         
         assert result.success is True
-        assert result.url == "https://www.upwork.com"
-        assert result.page_title == "Upwork - Test Page"
+        assert result.url == "https://www.ardan.com"
+        assert result.page_title == "Ardan - Test Page"
         mock_stagehand.page.goto.assert_called_once()
     
     @pytest.mark.asyncio
@@ -288,7 +288,7 @@ class TestStagehandController:
         assert "title" in result
         assert "timestamp" in result
         assert "content_summary" in result
-        assert result["url"] == "https://www.upwork.com"
+        assert result["url"] == "https://www.ardan.com"
     
     @pytest.mark.asyncio
     async def test_recover_from_error_auto_strategy(self, stagehand_controller, mock_stagehand):
@@ -324,13 +324,13 @@ class TestStagehandController:
         mock_stagehand.close.assert_called_once()
 
 
-class TestUpworkJobSearchController:
-    """Test cases for UpworkJobSearchController"""
+class TestArdanJobSearchController:
+    """Test cases for ArdanJobSearchController"""
     
     @pytest.fixture
     async def job_search_controller(self, mock_browserbase_client):
-        """Create UpworkJobSearchController for testing"""
-        return UpworkJobSearchController(mock_browserbase_client)
+        """Create ArdanJobSearchController for testing"""
+        return ArdanJobSearchController(mock_browserbase_client)
     
     @pytest.mark.asyncio
     async def test_search_jobs_success(self, job_search_controller, mock_stagehand):
@@ -338,7 +338,7 @@ class TestUpworkJobSearchController:
         job_search_controller.stagehand_instances["test_session"] = mock_stagehand
         
         # Mock successful navigation
-        mock_stagehand.page.url = "https://www.upwork.com/nx/search/jobs"
+        mock_stagehand.page.url = "https://www.ardan.com/nx/search/jobs"
         
         # Mock job extraction
         mock_stagehand.extract.return_value = {
@@ -352,7 +352,7 @@ class TestUpworkJobSearchController:
                     "proposals": "5-10",
                     "client_rating": "4.8",
                     "payment_verified": True,
-                    "job_url": "https://www.upwork.com/jobs/salesforce-dev-123"
+                    "job_url": "https://www.ardan.com/jobs/salesforce-dev-123"
                 }
             ]
         }
@@ -394,7 +394,7 @@ class TestUpworkJobSearchController:
         
         result = await job_search_controller.extract_job_details(
             "test_session",
-            "https://www.upwork.com/jobs/salesforce-dev-123"
+            "https://www.ardan.com/jobs/salesforce-dev-123"
         )
         
         assert result.success is True
@@ -404,13 +404,13 @@ class TestUpworkJobSearchController:
         assert "Agentforce" in result.data["skills_required"]
 
 
-class TestUpworkApplicationController:
-    """Test cases for UpworkApplicationController"""
+class TestArdanApplicationController:
+    """Test cases for ArdanApplicationController"""
     
     @pytest.fixture
     async def application_controller(self, mock_browserbase_client):
-        """Create UpworkApplicationController for testing"""
-        return UpworkApplicationController(mock_browserbase_client)
+        """Create ArdanApplicationController for testing"""
+        return ArdanApplicationController(mock_browserbase_client)
     
     @pytest.mark.asyncio
     async def test_submit_application_success(self, application_controller, mock_stagehand):
@@ -432,7 +432,7 @@ class TestUpworkApplicationController:
         
         result = await application_controller.submit_application(
             "test_session",
-            "https://www.upwork.com/jobs/salesforce-dev-123",
+            "https://www.ardan.com/jobs/salesforce-dev-123",
             proposal_content,
             75.0,
             ["portfolio.pdf", "case_study.pdf"]
@@ -510,14 +510,14 @@ class TestStagehandErrorHandler:
             error,
             "test_session_123",
             "test_operation",
-            "https://www.upwork.com",
+            "https://www.ardan.com",
             {"test": "metadata"}
         )
         
         assert context.error_message == "Test error"
         assert context.session_id == "test_session_123"
         assert context.operation == "test_operation"
-        assert context.page_url == "https://www.upwork.com"
+        assert context.page_url == "https://www.ardan.com"
         assert context.metadata == {"test": "metadata"}
         assert context.retry_count == 0
     
@@ -688,7 +688,7 @@ class TestIntegrationScenarios:
     @pytest.mark.asyncio
     async def test_complete_job_search_workflow(self, mock_browserbase_client, mock_stagehand):
         """Test complete job search workflow with error handling"""
-        controller = UpworkJobSearchController(mock_browserbase_client)
+        controller = ArdanJobSearchController(mock_browserbase_client)
         error_handler = StagehandErrorHandler()
         
         # Setup mock responses
@@ -699,7 +699,7 @@ class TestIntegrationScenarios:
                     "title": "Salesforce Agentforce Developer",
                     "client_name": "Tech Corp",
                     "budget": "$80/hr",
-                    "job_url": "https://www.upwork.com/jobs/test-123"
+                    "job_url": "https://www.ardan.com/jobs/test-123"
                 }
             ]
         }
@@ -721,7 +721,7 @@ class TestIntegrationScenarios:
     @pytest.mark.asyncio
     async def test_application_submission_with_error_recovery(self, mock_browserbase_client, mock_stagehand):
         """Test application submission with error recovery"""
-        controller = UpworkApplicationController(mock_browserbase_client)
+        controller = ArdanApplicationController(mock_browserbase_client)
         error_handler = StagehandErrorHandler()
         
         controller.stagehand_instances["test_session"] = mock_stagehand
@@ -739,7 +739,7 @@ class TestIntegrationScenarios:
         try:
             result = await controller.submit_application(
                 "test_session",
-                "https://www.upwork.com/jobs/test-123",
+                "https://www.ardan.com/jobs/test-123",
                 "Test proposal content",
                 75.0
             )

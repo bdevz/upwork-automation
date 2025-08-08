@@ -1,6 +1,6 @@
 # n8n Workflows
 
-This directory contains n8n workflow definitions for the Upwork Automation System.
+This directory contains n8n workflow definitions for the Ardan Automation System.
 
 ## Workflows
 

@@ -33,9 +33,9 @@ class TestMCPClient:
     def sample_page_data(self):
         """Sample page data for testing"""
         return {
-            "url": "https://www.upwork.com/nx/search/jobs/?q=Salesforce%20Agentforce",
-            "title": "Salesforce Agentforce Jobs - Upwork",
-            "content": "Find Salesforce Agentforce jobs on Upwork. Browse job listings and apply to projects.",
+            "url": "https://www.ardan.com/nx/search/jobs/?q=Salesforce%20Agentforce",
+            "title": "Salesforce Agentforce Jobs - Ardan",
+            "content": "Find Salesforce Agentforce jobs on Ardan. Browse job listings and apply to projects.",
             "interactive_elements": [
                 {"type": "button", "text": "Apply Now", "selector": ".apply-btn"},
                 {"type": "input", "placeholder": "Search jobs", "selector": "#search-input"}
@@ -260,7 +260,7 @@ class TestMCPIntegration:
         from stagehand_controller import NavigationResult
         return NavigationResult(
             success=True,
-            url="https://www.upwork.com/jobs/test",
+            url="https://www.ardan.com/jobs/test",
             page_title="Test Job",
             execution_time=2.0
         )
@@ -280,7 +280,7 @@ class TestMCPIntegration:
     async def test_enhanced_navigate(self, mcp_integration, mock_navigation_result):
         """Test enhanced navigation with MCP"""
         session_id = "test_session"
-        target_description = "Upwork job search page"
+        target_description = "Ardan job search page"
         automation_goal = "navigate"
         
         # Mock the stagehand navigation
@@ -488,13 +488,13 @@ class TestMCPDirectorActions:
                     "id": "prop_1",
                     "content": "This is a detailed proposal for the Salesforce project with over 100 characters to meet minimum requirements.",
                     "bid_amount": 75.0,
-                    "job_url": "https://upwork.com/job/123"
+                    "job_url": "https://ardan.com/job/123"
                 },
                 {
                     "id": "prop_2",
                     "content": "Short proposal",  # Too short
                     "bid_amount": "invalid",  # Invalid amount
-                    "job_url": "https://upwork.com/job/456"
+                    "job_url": "https://ardan.com/job/456"
                 }
             ]
         }
@@ -626,19 +626,19 @@ class TestMCPContextAnalysis:
         
         test_cases = [
             {
-                "url": "https://www.upwork.com/nx/search/jobs/",
-                "title": "Find Jobs - Upwork",
+                "url": "https://www.ardan.com/nx/search/jobs/",
+                "title": "Find Jobs - Ardan",
                 "content": "Search for freelance jobs",
                 "expected_type": "job_search"
             },
             {
-                "url": "https://www.upwork.com/jobs/~123456",
+                "url": "https://www.ardan.com/jobs/~123456",
                 "title": "Salesforce Developer Job",
                 "content": "We need a Salesforce developer",
                 "expected_type": "job_details"
             },
             {
-                "url": "https://www.upwork.com/ab/proposals/job/123456",
+                "url": "https://www.ardan.com/ab/proposals/job/123456",
                 "title": "Submit Proposal",
                 "content": "Submit your proposal for this job",
                 "expected_type": "application_form"
@@ -662,7 +662,7 @@ class TestMCPContextAnalysis:
         
         session_id = "learning_test_session"
         page_data = {
-            "url": "https://www.upwork.com/jobs/test",
+            "url": "https://www.ardan.com/jobs/test",
             "title": "Test Job",
             "content": "Test job content"
         }

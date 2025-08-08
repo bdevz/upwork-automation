@@ -63,8 +63,8 @@ def validate_code_structure():
     
     required_classes = [
         "class StagehandController",
-        "class UpworkJobSearchController", 
-        "class UpworkApplicationController",
+        "class ArdanJobSearchController", 
+        "class ArdanApplicationController",
         "class NavigationStrategy",
         "class ExtractionType"
     ]
@@ -124,8 +124,8 @@ def validate_test_structure():
     
     required_test_classes = [
         "class TestStagehandController",
-        "class TestUpworkJobSearchController",
-        "class TestUpworkApplicationController", 
+        "class TestArdanJobSearchController",
+        "class TestArdanApplicationController", 
         "class TestStagehandErrorHandler",
         "class TestIntegrationScenarios"
     ]
@@ -201,8 +201,8 @@ def validate_integration_points():
     
     required_exports = [
         "StagehandController",
-        "UpworkJobSearchController",
-        "UpworkApplicationController", 
+        "ArdanJobSearchController",
+        "ArdanApplicationController", 
         "StagehandErrorHandler",
         "NavigationStrategy",
         "ExtractionType"

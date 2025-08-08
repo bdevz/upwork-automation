@@ -57,7 +57,7 @@ class TestJobFilteringAndRanking:
             
             return Job(
                 id=uuid4(),
-                upwork_job_id=f"job-{uuid4().hex[:8]}",
+                ardan_job_id=f"job-{uuid4().hex[:8]}",
                 title=title,
                 description=description,
                 hourly_rate=Decimal(str(hourly_rate)),

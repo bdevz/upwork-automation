@@ -1,5 +1,5 @@
 """
-Core Job Discovery Service for automated Upwork job search and extraction
+Core Job Discovery Service for automated Ardan job search and extraction
 """
 import asyncio
 import hashlib
@@ -14,7 +14,7 @@ import uuid
 from shared.models import Job, JobStatus, JobType, JobSearchParams
 from shared.config import settings
 from shared.utils import setup_logging, retry_async
-from stagehand_controller import StagehandController, UpworkJobSearchController
+from stagehand_controller import StagehandController, ArdanJobSearchController
 from mcp_client import MCPClient
 from director import DirectorOrchestrator
 from browserbase_client import BrowserbaseClient
@@ -74,14 +74,14 @@ class JobDiscoveryService:
     ):
         # Initialize components
         self.browserbase_client = browserbase_client or BrowserbaseClient()
-        self.stagehand_controller = stagehand_controller or UpworkJobSearchController()
+        self.stagehand_controller = stagehand_controller or ArdanJobSearchController()
         self.mcp_client = mcp_client or MCPClient()
         self.director = director or DirectorOrchestrator()
         
         # Job storage and caching
         self.discovered_jobs: Dict[str, Job] = {}
         self.job_content_hashes: Set[str] = set()
-        self.upwork_job_ids: Set[str] = set()
+        self.ardan_job_ids: Set[str] = set()
         
         # Search configuration
         self.default_keywords = [
@@ -236,7 +236,7 @@ class JobDiscoveryService:
             # Create or use existing session
             if session_id is None:
                 session_info = await self.browserbase_client.create_session({
-                    "projectId": "upwork-automation",
+                    "projectId": "ardan-automation",
                     "stealth": True,
                     "keepAlive": True
                 })
@@ -278,7 +278,7 @@ class JobDiscoveryService:
             sessions = []
             for i in range(size):
                 session_info = await self.browserbase_client.create_session({
-                    "projectId": "upwork-automation",
+                    "projectId": "ardan-automation",
                     "stealth": True,
                     "keepAlive": True,
                     "proxies": True
@@ -354,10 +354,10 @@ class JobDiscoveryService:
         jobs = []
         
         try:
-            # Navigate to Upwork job search
+            # Navigate to Ardan job search
             nav_result = await self.stagehand_controller.intelligent_navigate(
                 session_id,
-                "https://www.upwork.com/nx/search/jobs/",
+                "https://www.ardan.com/nx/search/jobs/",
                 context={"search_type": "job_search"}
             )
             
@@ -447,7 +447,7 @@ class JobDiscoveryService:
     ) -> List[Job]:
         """Execute category-based job search"""
         # Placeholder for category-based search
-        # Would implement navigation to specific Upwork categories
+        # Would implement navigation to specific Ardan categories
         return []
     
     async def _client_based_search(
@@ -552,7 +552,7 @@ class JobDiscoveryService:
             # Create Job object
             job = Job(
                 id=uuid.uuid4(),
-                upwork_job_id=job_data.get("job_id"),
+                ardan_job_id=job_data.get("job_id"),
                 title=title,
                 description=description,
                 budget_min=budget_min,
@@ -590,7 +590,7 @@ class JobDiscoveryService:
         """Remove duplicate jobs using ID and content hash checking"""
         original_count = len(jobs)
         seen_hashes = set()
-        seen_upwork_ids = set()
+        seen_ardan_ids = set()
         deduplicated_jobs = []
         duplicate_pairs = []
         
@@ -598,10 +598,10 @@ class JobDiscoveryService:
             is_duplicate = False
             duplicate_reason = ""
             
-            # Check Upwork job ID
-            if job.upwork_job_id and job.upwork_job_id in seen_upwork_ids:
+            # Check Ardan job ID
+            if job.ardan_job_id and job.ardan_job_id in seen_ardan_ids:
                 is_duplicate = True
-                duplicate_reason = f"Duplicate Upwork ID: {job.upwork_job_id}"
+                duplicate_reason = f"Duplicate Ardan ID: {job.ardan_job_id}"
             
             # Check content hash
             elif job.content_hash and job.content_hash in seen_hashes:
@@ -613,8 +613,8 @@ class JobDiscoveryService:
                 logger.debug(f"Removing duplicate job: {job.title} - {duplicate_reason}")
             else:
                 deduplicated_jobs.append(job)
-                if job.upwork_job_id:
-                    seen_upwork_ids.add(job.upwork_job_id)
+                if job.ardan_job_id:
+                    seen_ardan_ids.add(job.ardan_job_id)
                 if job.content_hash:
                     seen_hashes.add(job.content_hash)
         
@@ -709,7 +709,7 @@ class JobDiscoveryService:
             
             # Use MCP client for AI-powered analysis
             analysis_prompt = f"""
-            Analyze this Upwork job for relevance to a Salesforce Agentforce Developer:
+            Analyze this Ardan job for relevance to a Salesforce Agentforce Developer:
             
             Job: {job_context}
             
@@ -878,7 +878,7 @@ class JobDiscoveryService:
         return {
             "total_jobs_discovered": len(self.discovered_jobs),
             "unique_content_hashes": len(self.job_content_hashes),
-            "unique_upwork_ids": len(self.upwork_job_ids),
+            "unique_ardan_ids": len(self.ardan_job_ids),
             "success_patterns_count": len(self.success_patterns),
             "last_discovery": datetime.utcnow().isoformat()
         }

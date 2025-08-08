@@ -1,12 +1,12 @@
 """
-Browser automation module for Upwork automation system
+Browser automation module for Ardan automation system
 """
 from .browserbase_client import BrowserbaseClient, SessionInfo, SessionConfig, SessionStatus, SessionPool
 from .session_manager import SessionManager, SessionType
 from .stagehand_controller import (
     StagehandController,
-    UpworkJobSearchController,
-    UpworkApplicationController,
+    ArdanJobSearchController,
+    ArdanApplicationController,
     NavigationStrategy,
     ExtractionType,
     NavigationResult,
@@ -43,8 +43,8 @@ __all__ = [
     
     # Stagehand components
     'StagehandController',
-    'UpworkJobSearchController', 
-    'UpworkApplicationController',
+    'ArdanJobSearchController', 
+    'ArdanApplicationController',
     'NavigationStrategy',
     'ExtractionType',
     'NavigationResult',

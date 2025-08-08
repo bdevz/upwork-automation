@@ -1,5 +1,5 @@
 """
-Shared utility functions for the Upwork Automation System
+Shared utility functions for the Ardan Automation System
 """
 import hashlib
 import logging
@@ -234,9 +234,9 @@ def truncate_text(text: str, max_length: int = 100, suffix: str = "...") -> str:
     return text[:max_length - len(suffix)] + suffix
 
 
-def extract_upwork_job_id(job_url: str) -> Optional[str]:
-    """Extract Upwork job ID from job URL"""
-    # Pattern for Upwork job URLs
+def extract_ardan_job_id(job_url: str) -> Optional[str]:
+    """Extract Ardan job ID from job URL"""
+    # Pattern for Ardan job URLs
     pattern = r'/jobs/([a-zA-Z0-9_-]+)'
     match = re.search(pattern, job_url)
     

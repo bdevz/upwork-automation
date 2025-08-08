@@ -14,7 +14,7 @@ from browser_automation.director import DirectorOrchestrator, WorkflowStatus
 from browser_automation.director_actions import DirectorActions
 from browser_automation.session_manager import SessionManager, SessionType
 from browser_automation.stagehand_controller import (
-    StagehandController, UpworkJobSearchController, UpworkApplicationController,
+    StagehandController, ArdanJobSearchController, ArdanApplicationController,
     ExtractionResult, InteractionResult, ExtractionType
 )
 from browser_automation.browserbase_client import BrowserbaseClient
@@ -83,7 +83,7 @@ class TestDirectorIntegration:
             {
                 "id": "job1",
                 "title": "Salesforce Agentforce Developer",
-                "job_url": "https://upwork.com/job1",
+                "job_url": "https://ardan.com/job1",
                 "client_rating": 4.5,
                 "hourly_rate": 75,
                 "match_score": 0.9
@@ -91,7 +91,7 @@ class TestDirectorIntegration:
             {
                 "id": "job2", 
                 "title": "Salesforce AI Specialist",
-                "job_url": "https://upwork.com/job2",
+                "job_url": "https://ardan.com/job2",
                 "client_rating": 4.8,
                 "hourly_rate": 80,
                 "match_score": 0.85
@@ -99,7 +99,7 @@ class TestDirectorIntegration:
         ]
         
         # Mock the job search controller
-        with patch('browser_automation.director_actions.UpworkJobSearchController') as mock_controller_class:
+        with patch('browser_automation.director_actions.ArdanJobSearchController') as mock_controller_class:
             mock_controller = Mock()
             mock_controller_class.return_value = mock_controller
             
@@ -136,13 +136,13 @@ class TestDirectorIntegration:
         # Test proposals
         test_proposals = [
             {
-                "job_url": "https://upwork.com/job1",
+                "job_url": "https://ardan.com/job1",
                 "content": "I am an experienced Salesforce Agentforce developer with 5+ years of experience...",
                 "bid_amount": 75,
                 "attachments": []
             },
             {
-                "job_url": "https://upwork.com/job2", 
+                "job_url": "https://ardan.com/job2", 
                 "content": "As a certified Salesforce AI specialist, I can help you build intelligent agents...",
                 "bid_amount": 80,
                 "attachments": ["portfolio_item_1"]
@@ -150,7 +150,7 @@ class TestDirectorIntegration:
         ]
         
         # Mock the application controller
-        with patch('browser_automation.director_actions.UpworkApplicationController') as mock_controller_class:
+        with patch('browser_automation.director_actions.ArdanApplicationController') as mock_controller_class:
             mock_controller = Mock()
             mock_controller_class.return_value = mock_controller
             
@@ -253,7 +253,7 @@ class TestDirectorIntegration:
                 "error": None
             }
         
-        with patch('browser_automation.director_actions.UpworkJobSearchController') as mock_controller_class:
+        with patch('browser_automation.director_actions.ArdanJobSearchController') as mock_controller_class:
             mock_controller = Mock()
             mock_controller_class.return_value = mock_controller
             mock_controller.search_jobs = AsyncMock(side_effect=mock_search_side_effect)
@@ -403,7 +403,7 @@ class TestDirectorActionsIntegration:
         }
         
         # Mock job search controller
-        with patch('browser_automation.director_actions.UpworkJobSearchController') as mock_controller_class:
+        with patch('browser_automation.director_actions.ArdanJobSearchController') as mock_controller_class:
             mock_controller = Mock()
             mock_controller_class.return_value = mock_controller
             
@@ -445,13 +445,13 @@ class TestDirectorActionsIntegration:
         session_id = "test_session"
         proposals = [
             {
-                "job_url": "https://upwork.com/job1",
+                "job_url": "https://ardan.com/job1",
                 "content": "Proposal content 1",
                 "bid_amount": 75,
                 "attachments": []
             },
             {
-                "job_url": "https://upwork.com/job2",
+                "job_url": "https://ardan.com/job2",
                 "content": "Proposal content 2", 
                 "bid_amount": 80,
                 "attachments": ["attachment1"]
@@ -464,7 +464,7 @@ class TestDirectorActionsIntegration:
         }
         
         # Mock application controller
-        with patch('browser_automation.director_actions.UpworkApplicationController') as mock_controller_class:
+        with patch('browser_automation.director_actions.ArdanApplicationController') as mock_controller_class:
             mock_controller = Mock()
             mock_controller_class.return_value = mock_controller
             
@@ -487,7 +487,7 @@ class TestDirectorActionsIntegration:
             # Verify all proposals were submitted
             for proposal_result in result["results"]:
                 assert proposal_result["success"] is True
-                assert proposal_result["job_url"] in ["https://upwork.com/job1", "https://upwork.com/job2"]
+                assert proposal_result["job_url"] in ["https://ardan.com/job1", "https://ardan.com/job2"]
             
             # Verify controller was called for each proposal
             assert mock_controller.submit_application.call_count == 2
@@ -543,7 +543,7 @@ class TestDirectorActionsIntegration:
         proposals = [
             # Valid proposal
             {
-                "job_url": "https://upwork.com/job1",
+                "job_url": "https://ardan.com/job1",
                 "content": "This is a valid proposal with sufficient content length to pass validation requirements.",
                 "bid_amount": 75
             },
@@ -554,13 +554,13 @@ class TestDirectorActionsIntegration:
             },
             # Invalid proposal - content too short
             {
-                "job_url": "https://upwork.com/job2",
+                "job_url": "https://ardan.com/job2",
                 "content": "Too short",
                 "bid_amount": 50
             },
             # Invalid proposal - bid amount too low
             {
-                "job_url": "https://upwork.com/job3",
+                "job_url": "https://ardan.com/job3",
                 "content": "Valid content length for this proposal that should pass the minimum character requirement.",
                 "bid_amount": 5
             }
@@ -578,7 +578,7 @@ class TestDirectorActionsIntegration:
         # Check valid proposals
         valid_proposals = result["valid_proposals"]
         assert len(valid_proposals) == 1
-        assert valid_proposals[0]["job_url"] == "https://upwork.com/job1"
+        assert valid_proposals[0]["job_url"] == "https://ardan.com/job1"
         
         # Check invalid proposals
         invalid_proposals = result["invalid_proposals"]

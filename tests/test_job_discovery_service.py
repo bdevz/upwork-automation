@@ -73,8 +73,8 @@ class TestJobDiscoveryService:
             "hire_rate": "0.85",
             "skills": ["Salesforce", "Apex", "Lightning", "AI"],
             "posted_time": "2024-01-15T10:00:00Z",
-            "job_id": "upwork-123456",
-            "job_url": "https://upwork.com/jobs/123456"
+            "job_id": "ardan-123456",
+            "job_url": "https://ardan.com/jobs/123456"
         }
     
     @pytest.fixture
@@ -83,7 +83,7 @@ class TestJobDiscoveryService:
         return [
             Job(
                 id=uuid4(),
-                upwork_job_id="job-001",
+                ardan_job_id="job-001",
                 title="Salesforce Agentforce Implementation",
                 description="Implement Agentforce for customer service automation",
                 hourly_rate=Decimal("75.00"),
@@ -99,7 +99,7 @@ class TestJobDiscoveryService:
             ),
             Job(
                 id=uuid4(),
-                upwork_job_id="job-002",
+                ardan_job_id="job-002",
                 title="Einstein AI Integration",
                 description="Integrate Einstein AI with existing Salesforce org",
                 hourly_rate=Decimal("80.00"),
@@ -191,7 +191,7 @@ class TestJobDiscoveryService:
 
     async def test_extract_job_details_success(self, job_discovery_service, mock_dependencies, sample_job_data):
         """Test successful job detail extraction"""
-        job_url = "https://upwork.com/jobs/123456"
+        job_url = "https://ardan.com/jobs/123456"
         
         # Mock session creation
         mock_dependencies["browserbase_client"].create_session.return_value = MagicMock(id="session-123")
@@ -219,7 +219,7 @@ class TestJobDiscoveryService:
 
     async def test_extract_job_details_failure(self, job_discovery_service, mock_dependencies):
         """Test job detail extraction failure"""
-        job_url = "https://upwork.com/jobs/invalid"
+        job_url = "https://ardan.com/jobs/invalid"
         
         # Mock session creation
         mock_dependencies["browserbase_client"].create_session.return_value = MagicMock(id="session-123")
@@ -244,7 +244,7 @@ class TestJobDiscoveryService:
         # Create jobs with duplicates
         job1 = Job(
             id=uuid4(),
-            upwork_job_id="job-001",
+            ardan_job_id="job-001",
             title="Salesforce Developer",
             description="Salesforce development work",
             client_name="Client A",
@@ -257,10 +257,10 @@ class TestJobDiscoveryService:
             updated_at=datetime.utcnow()
         )
         
-        # Duplicate by Upwork ID
+        # Duplicate by Ardan ID
         job2 = Job(
             id=uuid4(),
-            upwork_job_id="job-001",  # Same Upwork ID
+            ardan_job_id="job-001",  # Same Ardan ID
             title="Different Title",
             description="Different description",
             client_name="Client B",
@@ -280,7 +280,7 @@ class TestJobDiscoveryService:
         # Create duplicate by content hash
         job3 = Job(
             id=uuid4(),
-            upwork_job_id="job-003",
+            ardan_job_id="job-003",
             title="Salesforce Developer",  # Same title
             description="Salesforce development work",  # Same description
             client_name="Client A",  # Same client
@@ -539,7 +539,7 @@ class TestJobDiscoveryService:
         assert job.client_payment_verified is True
         assert job.client_hire_rate == Decimal("0.85")
         assert job.job_type == JobType.HOURLY
-        assert job.upwork_job_id == sample_job_data["job_id"]
+        assert job.ardan_job_id == sample_job_data["job_id"]
         assert job.skills_required == sample_job_data["skills"]
         assert job.status == JobStatus.DISCOVERED
         assert job.content_hash is not None
@@ -601,7 +601,7 @@ class TestJobDiscoveryService:
         # Add some test data
         job_discovery_service.discovered_jobs["job1"] = MagicMock()
         job_discovery_service.job_content_hashes.add("hash1")
-        job_discovery_service.upwork_job_ids.add("upwork1")
+        job_discovery_service.ardan_job_ids.add("ardan1")
         job_discovery_service.success_patterns["pattern1"] = 0.8
         
         # Get statistics
@@ -610,7 +610,7 @@ class TestJobDiscoveryService:
         # Verify statistics
         assert stats["total_jobs_discovered"] == 1
         assert stats["unique_content_hashes"] == 1
-        assert stats["unique_upwork_ids"] == 1
+        assert stats["unique_ardan_ids"] == 1
         assert stats["success_patterns_count"] == 1
         assert "last_discovery" in stats
 
@@ -677,9 +677,9 @@ class TestJobDiscoveryIntegration:
         pass
     
     @pytest.mark.integration
-    async def test_real_upwork_search(self):
-        """Test real Upwork job search"""
-        # This would test against real Upwork pages
+    async def test_real_ardan_search(self):
+        """Test real Ardan job search"""
+        # This would test against real Ardan pages
         # Requires careful setup to avoid rate limiting
         pass
 

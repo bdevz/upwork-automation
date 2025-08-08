@@ -97,7 +97,7 @@ class TestBrowserbaseIntegration:
         }
         
         navigation_context = {
-            "current_url": "https://www.upwork.com/nx/search/jobs",
+            "current_url": "https://www.ardan.com/nx/search/jobs",
             "page_title": "Find Jobs",
             "search_filters": ["Salesforce", "Agentforce"]
         }

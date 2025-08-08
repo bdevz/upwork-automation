@@ -1,4 +1,4 @@
-# Upwork Automation System
+# Ardan Automation System
 
 An automated job application system for Salesforce Agentforce Developer positions that scales from 2-3 manual applications to 20-30 automated applications per day using advanced browser automation.
 
@@ -15,7 +15,7 @@ An automated job application system for Salesforce Agentforce Developer position
 ```bash
 # Clone and setup
 git clone <repository>
-cd upwork-automation
+cd ardan-automation
 
 # Start services
 docker-compose up -d
@@ -27,7 +27,7 @@ open http://localhost:3000
 ## Project Structure
 
 ```
-upwork-automation/
+ardan-automation/
 ├── api/                    # FastAPI backend server
 ├── web/                    # React frontend interface
 ├── browser-automation/     # Browser automation services

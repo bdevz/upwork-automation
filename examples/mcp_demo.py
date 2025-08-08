@@ -43,22 +43,22 @@ async def demo_mcp_context_analysis():
     mcp_client = MCPClient()
     await mcp_client.initialize()
     
-    # Sample page data for different Upwork pages
+    # Sample page data for different Ardan pages
     job_search_page = {
-        "url": "https://www.upwork.com/nx/search/jobs/?q=Salesforce%20Agentforce",
-        "title": "Salesforce Agentforce Jobs - Upwork",
-        "content": "Find Salesforce Agentforce jobs on Upwork. Browse job listings and apply to projects.",
+        "url": "https://www.ardan.com/nx/search/jobs/?q=Salesforce%20Agentforce",
+        "title": "Salesforce Agentforce Jobs - Ardan",
+        "content": "Find Salesforce Agentforce jobs on Ardan. Browse job listings and apply to projects.",
     }
     
     job_details_page = {
-        "url": "https://www.upwork.com/jobs/~123456789",
-        "title": "Salesforce Agentforce Developer Needed - Upwork",
+        "url": "https://www.ardan.com/jobs/~123456789",
+        "title": "Salesforce Agentforce Developer Needed - Ardan",
         "content": "We need an experienced Salesforce Agentforce developer to build AI agents for our customer service platform.",
     }
     
     application_form_page = {
-        "url": "https://www.upwork.com/ab/proposals/job/123456789",
-        "title": "Submit Proposal - Upwork",
+        "url": "https://www.ardan.com/ab/proposals/job/123456789",
+        "title": "Submit Proposal - Ardan",
         "content": "Submit your proposal for this Salesforce Agentforce project. Include your cover letter and bid amount.",
     }
     
@@ -116,7 +116,7 @@ async def demo_mcp_learning_system():
     # Create a consistent context for learning
     context = PageContext(
         session_id="learning_demo_session",
-        url="https://www.upwork.com/jobs/search",
+        url="https://www.ardan.com/jobs/search",
         title="Job Search",
         page_type="job_search",
         content_hash="learning_demo_hash",
@@ -310,7 +310,7 @@ async def demo_mcp_session_memory():
     steps = [
         {
             "page_data": {
-                "url": "https://www.upwork.com/nx/search/jobs/",
+                "url": "https://www.ardan.com/nx/search/jobs/",
                 "title": "Job Search",
                 "content": "Search for jobs"
             },
@@ -322,7 +322,7 @@ async def demo_mcp_session_memory():
         },
         {
             "page_data": {
-                "url": "https://www.upwork.com/jobs/~123456",
+                "url": "https://www.ardan.com/jobs/~123456",
                 "title": "Job Details",
                 "content": "Salesforce Agentforce job details"
             },
@@ -334,7 +334,7 @@ async def demo_mcp_session_memory():
         },
         {
             "page_data": {
-                "url": "https://www.upwork.com/ab/proposals/job/123456",
+                "url": "https://www.ardan.com/ab/proposals/job/123456",
                 "title": "Submit Proposal",
                 "content": "Application form"
             },

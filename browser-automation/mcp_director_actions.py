@@ -118,7 +118,7 @@ class MCPDirectorActions(DirectorActions):
             # Navigate to job search with MCP enhancement
             nav_result = await self.mcp_integration.enhanced_navigate(
                 session_id=session_id,
-                target_description="Upwork job search page",
+                target_description="Ardan job search page",
                 automation_goal="job_search",
                 context_data={"keywords": keywords, "sort": sort_order}
             )

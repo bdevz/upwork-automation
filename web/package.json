@@ -1,7 +1,7 @@
 {
-  "name": "upwork-automation-web",
+  "name": "ardan-automation-web",
   "version": "1.0.0",
-  "description": "Web interface for Upwork Automation System",
+  "description": "Web interface for Ardan Automation System",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.1",

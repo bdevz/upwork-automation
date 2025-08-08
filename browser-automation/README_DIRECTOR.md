@@ -1,6 +1,6 @@
 # Director Session Orchestration System
 
-The Director Session Orchestration System is a comprehensive workflow management and browser session orchestration layer for the Upwork Automation System. It manages multiple browser sessions, coordinates parallel workflows, and provides robust error handling and recovery mechanisms.
+The Director Session Orchestration System is a comprehensive workflow management and browser session orchestration layer for the Ardan Automation System. It manages multiple browser sessions, coordinates parallel workflows, and provides robust error handling and recovery mechanisms.
 
 ## Overview
 
@@ -201,7 +201,7 @@ from browser_automation.director import create_proposal_submission_workflow
 
 proposals = [
     {
-        "job_url": "https://upwork.com/job1",
+        "job_url": "https://ardan.com/job1",
         "content": "Proposal content...",
         "bid_amount": 75
     },

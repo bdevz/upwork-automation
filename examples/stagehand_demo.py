@@ -1,6 +1,6 @@
 """
 Demonstration of Stagehand AI Browser Control Implementation
-This example shows how to use the Stagehand controller for Upwork automation
+This example shows how to use the Stagehand controller for Ardan automation
 """
 import sys
 import os
@@ -34,8 +34,8 @@ shared_utils = import_from_path("shared_utils", shared_path / "utils.py")
 
 # Import classes directly
 StagehandController = stagehand_controller.StagehandController
-UpworkJobSearchController = stagehand_controller.UpworkJobSearchController
-UpworkApplicationController = stagehand_controller.UpworkApplicationController
+ArdanJobSearchController = stagehand_controller.ArdanJobSearchController
+ArdanApplicationController = stagehand_controller.ArdanApplicationController
 NavigationStrategy = stagehand_controller.NavigationStrategy
 ExtractionType = stagehand_controller.ExtractionType
 
@@ -57,8 +57,8 @@ class StagehandDemo:
     
     def __init__(self):
         self.session_manager = SessionManager()
-        self.job_search_controller = UpworkJobSearchController()
-        self.application_controller = UpworkApplicationController()
+        self.job_search_controller = ArdanJobSearchController()
+        self.application_controller = ArdanApplicationController()
         self.error_handler = StagehandErrorHandler()
     
     async def initialize(self):
@@ -153,7 +153,7 @@ class StagehandDemo:
                 logger.info("Testing direct URL navigation...")
                 nav_result = await controller.intelligent_navigate(
                     session_id,
-                    "https://www.upwork.com/nx/search/jobs",
+                    "https://www.ardan.com/nx/search/jobs",
                     NavigationStrategy.DIRECT_URL
                 )
                 
@@ -212,7 +212,7 @@ class StagehandDemo:
                 # Navigate to a job search page first
                 await controller.intelligent_navigate(
                     session_id,
-                    "https://www.upwork.com/nx/search/jobs?q=salesforce",
+                    "https://www.ardan.com/nx/search/jobs?q=salesforce",
                     NavigationStrategy.DIRECT_URL
                 )
                 
@@ -295,7 +295,7 @@ class StagehandDemo:
                 # Navigate to job search page
                 await controller.intelligent_navigate(
                     session_id,
-                    "https://www.upwork.com/nx/search/jobs",
+                    "https://www.ardan.com/nx/search/jobs",
                     NavigationStrategy.DIRECT_URL
                 )
                 

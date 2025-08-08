@@ -7,7 +7,7 @@ from datetime import datetime
 
 from shared.utils import setup_logging
 from browserbase_client import BrowserbaseClient
-from stagehand_controller import UpworkJobSearchController, UpworkApplicationController
+from stagehand_controller import ArdanJobSearchController, ArdanApplicationController
 
 logger = setup_logging("director-actions")
 
@@ -87,8 +87,8 @@ class DirectorActions:
         sort_order = parameters.get("sort", "newest")
         filters = parameters.get("filters", [])
         
-        # Use specialized Upwork job search controller
-        job_controller = UpworkJobSearchController()
+        # Use specialized Ardan job search controller
+        job_controller = ArdanJobSearchController()
         
         # Convert filters to dictionary format
         filter_dict = {}
@@ -117,8 +117,8 @@ class DirectorActions:
         batch_size = parameters.get("batch_size", 5)
         proposals = parameters.get("proposals", [])
         
-        # Use specialized Upwork application controller
-        app_controller = UpworkApplicationController()
+        # Use specialized Ardan application controller
+        app_controller = ArdanApplicationController()
         
         submitted = 0
         failed = 0
@@ -271,7 +271,7 @@ class DirectorActions:
         if not session_id:
             raise ValueError("Session ID required for verification")
         
-        app_controller = UpworkApplicationController()
+        app_controller = ArdanApplicationController()
         verification_result = await app_controller.verify_submission(session_id)
         
         return {
@@ -281,14 +281,14 @@ class DirectorActions:
         }
     
     async def _action_check_profile(self, session_id: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
-        """Check Upwork profile status"""
+        """Check Ardan profile status"""
         if not session_id:
             raise ValueError("Session ID required for profile check")
         
         # Navigate to profile page and extract status
         nav_result = await self.stagehand_controller.intelligent_navigate(
             session_id,
-            "Upwork profile page",
+            "Ardan profile page",
             context={"target": "profile_overview"}
         )
         

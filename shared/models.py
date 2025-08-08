@@ -1,5 +1,5 @@
 """
-Shared data models for the Upwork Automation System
+Shared data models for the Ardan Automation System
 """
 from datetime import datetime
 from decimal import Decimal
@@ -42,7 +42,7 @@ class ApplicationStatus(str, Enum):
 
 class Job(BaseModel):
     id: Optional[UUID] = None
-    upwork_job_id: Optional[str] = None
+    ardan_job_id: Optional[str] = None
     title: str
     description: str
     budget_min: Optional[Decimal] = None
@@ -92,7 +92,7 @@ class Application(BaseModel):
     id: Optional[UUID] = None
     job_id: UUID
     proposal_id: UUID
-    upwork_application_id: Optional[str] = None
+    ardan_application_id: Optional[str] = None
     submitted_at: Optional[datetime] = None
     status: ApplicationStatus = ApplicationStatus.PENDING
     client_response: Optional[str] = None

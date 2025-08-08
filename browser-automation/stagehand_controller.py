@@ -547,9 +547,9 @@ class StagehandController:
         logger.info("Stagehand controller shutdown complete")
 
 
-# Specialized controllers for specific Upwork automation tasks
-class UpworkJobSearchController(StagehandController):
-    """Specialized controller for Upwork job search operations"""
+# Specialized controllers for specific Ardan automation tasks
+class ArdanJobSearchController(StagehandController):
+    """Specialized controller for Ardan job search operations"""
     
     async def search_jobs(
         self,
@@ -557,12 +557,12 @@ class UpworkJobSearchController(StagehandController):
         keywords: List[str],
         filters: Optional[Dict[str, Any]] = None
     ) -> ExtractionResult:
-        """Search for jobs on Upwork with specific criteria"""
+        """Search for jobs on Ardan with specific criteria"""
         
         # Navigate to job search page
         nav_result = await self.intelligent_navigate(
             session_id,
-            "Upwork job search page",
+            "Ardan job search page",
             NavigationStrategy.DIRECT_URL
         )
         
@@ -660,8 +660,8 @@ class UpworkJobSearchController(StagehandController):
         )
 
 
-class UpworkApplicationController(StagehandController):
-    """Specialized controller for Upwork job application submission"""
+class ArdanApplicationController(StagehandController):
+    """Specialized controller for Ardan job application submission"""
     
     async def submit_application(
         self,
