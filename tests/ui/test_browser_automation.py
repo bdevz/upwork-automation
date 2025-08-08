@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import MagicMock
+import os
 
 # Mock for a browser automation framework like Selenium or Playwright
 class MockBrowser:
@@ -8,11 +9,13 @@ class MockBrowser:
 
     def navigate(self, url):
         """Simulates navigating to a URL."""
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        
         if "login.html" in url:
-            with open("tests/ui/mock_pages/login.html", "r") as f:
+            with open(os.path.join(base_path, "mock_pages", "login.html"), "r") as f:
                 self.page_content = f.read()
         elif "job_post.html" in url:
-            with open("tests/ui/mock_pages/job_post.html", "r") as f:
+            with open(os.path.join(base_path, "mock_pages", "job_post.html"), "r") as f:
                 self.page_content = f.read()
 
     def click(self, selector):
