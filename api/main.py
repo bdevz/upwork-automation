@@ -10,7 +10,7 @@ import uvicorn
 from shared.config import settings, validate_config
 from shared.utils import setup_logging
 from database.connection import init_db, close_db
-from routers import jobs, proposals, applications, browser, system, metrics
+from routers import jobs, proposals, applications, browser, system, metrics, tracking
 
 
 # Setup logging
@@ -89,6 +89,7 @@ app.include_router(applications.router, prefix="/api/applications", tags=["appli
 app.include_router(browser.router, prefix="/api/browser", tags=["browser"])
 app.include_router(system.router, prefix="/api/system", tags=["system"])
 app.include_router(metrics.router, prefix="/api/metrics", tags=["metrics"])
+app.include_router(tracking.router, prefix="/api/tracking", tags=["tracking"])
 
 
 # Global exception handler
