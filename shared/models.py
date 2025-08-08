@@ -180,6 +180,12 @@ class ProposalGenerationRequest(BaseModel):
     include_attachments: bool = True
 
 
+class ProposalUpdate(BaseModel):
+    content: Optional[str] = None
+    bid_amount: Optional[Decimal] = None
+    status: Optional[ProposalStatus] = None
+
+
 class ApplicationSubmissionRequest(BaseModel):
     job_id: UUID
     proposal_id: UUID
