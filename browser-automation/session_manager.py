@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 
 from browserbase_client import BrowserbaseClient, SessionInfo, SessionStatus
 from shared.config import BrowserAutomationConfig
-from shared.utils import setup_logging
+from shared.logger import setup_logging
 
 logger = setup_logging("session-manager")
 
