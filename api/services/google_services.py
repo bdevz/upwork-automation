@@ -8,6 +8,7 @@ from typing import Dict, List
 
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
 from shared.config import settings
 from shared.utils import setup_logging
@@ -28,10 +29,14 @@ class GoogleServiceManager:
     def _load_credentials(self):
         if not settings.google_credentials:
             raise ValueError("Google credentials are not configured.")
-        creds_json = json.loads(settings.google_credentials)
-        return service_account.Credentials.from_service_account_info(
-            creds_json, scopes=SCOPES
-        )
+        try:
+            creds_json = json.loads(settings.google_credentials)
+            return service_account.Credentials.from_service_account_info(
+                creds_json, scopes=SCOPES
+            )
+        except (json.JSONDecodeError, TypeError) as e:
+            logger.error(f"Failed to parse Google credentials: {e}", exc_info=True)
+            raise ValueError("Invalid Google credentials format.") from e
 
     def _build_service(self, service_name, version):
         return build(service_name, version, credentials=self._credentials)
@@ -56,8 +61,11 @@ async def create_proposal_doc(title: str, content: str) -> Dict[str, str]:
             "google_doc_id": doc_id,
             "google_doc_url": f"https://docs.google.com/document/d/{doc_id}/edit",
         }
+    except HttpError as e:
+        logger.error(f"Google API error creating document: {e}", exc_info=True)
+        raise
     except Exception as e:
-        logger.error(f"Error creating Google Doc: {e}", exc_info=True)
+        logger.error(f"Unexpected error creating Google Doc: {e}", exc_info=True)
         raise
 
 
@@ -90,8 +98,11 @@ async def find_relevant_attachments(job_description: str) -> List[str]:
                 relevant_attachments.append(item.get("id"))
         
         return relevant_attachments
+    except HttpError as e:
+        logger.error(f"Google API error finding attachments: {e}", exc_info=True)
+        raise
     except Exception as e:
-        logger.error(f"Error searching for attachments in Google Drive: {e}", exc_info=True)
+        logger.error(f"Unexpected error finding attachments: {e}", exc_info=True)
         raise
 
 
