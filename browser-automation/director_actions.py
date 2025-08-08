@@ -5,7 +5,7 @@ import asyncio
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
-from shared.utils import setup_logging
+from shared.logger import setup_logging
 from browserbase_client import BrowserbaseClient
 from stagehand_controller import ArdanJobSearchController, ArdanApplicationController
 

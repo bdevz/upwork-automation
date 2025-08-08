@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from mcp_integration import MCPIntegration, MCPEnhancedResult
 from director_actions import DirectorActions
 from shared.config import settings
-from shared.utils import setup_logging, retry_async
+from shared.logger import setup_logging
 
 logger = setup_logging("mcp-director-actions")
 

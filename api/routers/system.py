@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.connection import get_db, check_db_health
 from shared.models import SystemStatusResponse, SystemConfig
-from shared.utils import setup_logging
+from shared.logger import setup_logging
 
 logger = setup_logging("system-router")
 router = APIRouter()

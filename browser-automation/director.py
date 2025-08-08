@@ -973,3 +973,34 @@ async def create_proposal_submission_workflow(
     )
     
     return await director.execute_workflow(workflow_id)
+
+
+async def create_proposal_generation_workflow(
+    director: DirectorOrchestrator, job_id: str, instructions: str
+) -> str:
+    """Create and execute a proposal generation workflow."""
+    steps = [
+        {
+            "id": "generate_proposal",
+            "name": "Generate Proposal",
+            "action": "generate_proposal",
+            "parameters": {
+                "job_id": job_id,
+                "instructions": instructions,
+            },
+        },
+        {
+            "id": "verify_proposal",
+            "name": "Verify Proposal",
+            "action": "verify_proposal",
+            "dependencies": ["generate_proposal"],
+        },
+    ]
+
+    workflow_id = await director.create_workflow(
+        name=f"Proposal Generation for Job {job_id}",
+        description=f"Generate and verify a proposal for job {job_id}",
+        steps=steps,
+    )
+
+    return await director.execute_workflow(workflow_id)
