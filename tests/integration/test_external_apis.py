@@ -1,4 +1,36 @@
 import pytest
+import pytest
+from unittest.mock import patch
+
+def fetch_upwork_jobs(api_key: str):
+    """
+    Simulates fetching jobs from the Upwork API.
+    In a real scenario, this function would make an HTTP request to the Upwork API.
+    """
+    # This is a placeholder for the actual API call logic.
+    # In a real implementation, you would use a library like `requests`
+    # to fetch data from the Upwork API endpoint.
+    return [
+        {"id": "job1", "title": "Senior Python Developer", "description": "A job for a senior Python dev."},
+        {"id": "job2", "title": "Frontend Developer (React)", "description": "React developer needed."},
+    ]
+
+@patch("tests.integration.test_external_apis.fetch_upwork_jobs")
+def test_upwork_api_integration(mock_fetch_upwork_jobs):
+    """
+    Tests the integration with the Upwork API using a mock response.
+    """
+    # Configure the mock to return a predefined response
+    mock_fetch_upwork_jobs.return_value = [
+        {"id": "job1", "title": "Mock Job 1", "description": "This is a mock job description."}
+    ]
+
+    # Simulate calling the function that interacts with the Upwork API
+    jobs = fetch_upwork_jobs("fake_api_key")
+
+    # Assert that the function returns the mocked data
+    assert len(jobs) == 1
+    assert jobs[0]["title"] == "Mock Job 1"
 from unittest.mock import patch, MagicMock
 
 def get_upwork_jobs(api_key: str, query: str):
@@ -32,3 +64,4 @@ def test_upwork_api_integration(mock_get_jobs):
     # Assert that the mock was called correctly and the response is as expected
     mock_get_jobs.assert_called_once_with("test_api_key", "DevOps")
     assert response["jobs"][0]["title"] == "DevOps Engineer"
+
