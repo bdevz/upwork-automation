@@ -4,7 +4,7 @@ Service for generating and scoring proposals using OpenAI.
 import json
 from typing import Dict, List
 
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, APIError
 
 from shared.config import settings, ProposalTemplateConfig
 from shared.models import Job
@@ -41,9 +41,12 @@ async def generate_proposal_content(job: Job) -> str:
             temperature=0.7,
         )
         return response.choices[0].message.content.strip()
+    except APIError as e:
+        logger.error(f"OpenAI API error generating proposal content: {e}", exc_info=True)
+        raise
     except Exception as e:
-        logger.error(f"Error generating proposal content: {e}")
-        return "Error: Could not generate proposal content."
+        logger.error(f"Unexpected error generating proposal content: {e}", exc_info=True)
+        raise
 
 
 async def score_proposal_quality(proposal_text: str, job_description: str) -> Dict[str, any]:
@@ -72,10 +75,13 @@ async def score_proposal_quality(proposal_text: str, job_description: str) -> Di
             "quality_score": result.get("quality_score", 0.0),
             "optimization_suggestions": result.get("optimization_suggestions", []),
         }
+    except APIError as e:
+        logger.error(f"OpenAI API error scoring proposal quality: {e}", exc_info=True)
     except json.JSONDecodeError:
-        logger.error("Failed to decode JSON from OpenAI response.")
+        logger.error("Failed to decode JSON from OpenAI response.", exc_info=True)
     except Exception as e:
-        logger.error(f"Error scoring proposal quality: {e}")
-    return {"quality_score": 0.0, "optimization_suggestions": ["Error scoring proposal."]}
+        logger.error(f"Unexpected error scoring proposal quality: {e}", exc_info=True)
+    
+    return {"quality_score": 0.0, "optimization_suggestions": ["Error scoring proposal due to an internal issue."]}
 
 
