@@ -7,13 +7,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
 from database.connection import get_db
-from shared.models import Job, Proposal, ProposalGenerationRequest
+from shared.models import Job, Proposal, ProposalGenerationRequest, ProposalUpdate
 from shared.utils import setup_logging
 from services.proposal_generator import (
     generate_proposal_content,
     score_proposal_quality,
 )
-from services.google_services import create_proposal_doc, find_relevant_attachments
+from services.google_services import google_service
+from services.bidding_service import calculate_bid_amount
+
 
 logger = setup_logging("proposals-router")
 router = APIRouter()
@@ -34,16 +36,16 @@ async def generate_proposal(
 
     google_doc_info = {}
     if request.include_attachments:
-        google_doc_info = await create_proposal_doc(f"Proposal for {job.title}", content)
+        google_doc_info = await google_service.create_proposal_doc(f"Proposal for {job.title}", content)
 
     attachments = []
     if request.include_attachments:
-        attachments = await find_relevant_attachments(job.description)
+        attachments = await google_service.find_relevant_attachments(job.description)
 
     proposal = Proposal(
         job_id=job.id,
         content=content,
-        bid_amount=0,  # Placeholder for bid logic
+        bid_amount=calculate_bid_amount(job),
         quality_score=quality_score["quality_score"],
         optimization_suggestions=quality_score["optimization_suggestions"],
         google_doc_id=google_doc_info.get("google_doc_id"),
@@ -71,10 +73,10 @@ async def get_proposal(
     return proposal
 
 
-@router.put("/{proposal_id}")
+@router.put("/{proposal_id}", response_model=Proposal)
 async def update_proposal(
     proposal_id: UUID,
-    proposal_data: dict,
+    proposal_data: ProposalUpdate,
     db: AsyncSession = Depends(get_db)
 ):
     """Update proposal content."""
@@ -82,11 +84,13 @@ async def update_proposal(
     if not proposal:
         raise HTTPException(status_code=404, detail="Proposal not found")
 
-    for key, value in proposal_data.items():
-        setattr(proposal, key, value)
+    update_data = proposal_data.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        if hasattr(proposal, key):
+            setattr(proposal, key, value)
     
     proposal.updated_at = datetime.utcnow()
     await db.commit()
     await db.refresh(proposal)
-    
     return proposal
+
