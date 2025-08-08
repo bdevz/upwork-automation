@@ -1,6 +1,7 @@
 """
 Service for interacting with Google Workspace APIs (Docs and Drive).
 """
+
 import asyncio
 import json
 from typing import Dict, List
@@ -18,48 +19,52 @@ SCOPES = [
     "https://www.googleapis.com/auth/documents",
 ]
 
+class GoogleServiceManager:
+    def __init__(self):
+        self._credentials = self._load_credentials()
+        self.docs_service = self._build_service("docs", "v1")
+        self.drive_service = self._build_service("drive", "v3")
 
-def get_google_credentials():
-    """
-    Loads Google credentials from the configuration.
-    """
-    if not settings.google_credentials:
-        raise ValueError("Google credentials are not configured.")
-    
-    creds_json = json.loads(settings.google_credentials)
-    return service_account.Credentials.from_service_account_info(creds_json, scopes=SCOPES)
+    def _load_credentials(self):
+        if not settings.google_credentials:
+            raise ValueError("Google credentials are not configured.")
+        creds_json = json.loads(settings.google_credentials)
+        return service_account.Credentials.from_service_account_info(
+            creds_json, scopes=SCOPES
+        )
 
+    def _build_service(self, service_name, version):
+        return build(service_name, version, credentials=self._credentials)
+
+google_service_manager = GoogleServiceManager()
 
 async def create_proposal_doc(title: str, content: str) -> Dict[str, str]:
     """
     Creates a new Google Doc with the proposal content.
     """
-    credentials = get_google_credentials()
-    docs_service = build("docs", "v1", credentials=credentials)
-
     document = {
         "title": title,
         "body": {"content": [{"paragraph": {"elements": [{"textRun": {"content": content}}]}}]},
     }
 
     try:
-        doc = await asyncio.to_thread(docs_service.documents().create(body=document).execute)
+        doc = await asyncio.to_thread(
+            google_service_manager.docs_service.documents().create(body=document).execute
+        )
         doc_id = doc.get("documentId")
         return {
             "google_doc_id": doc_id,
             "google_doc_url": f"https://docs.google.com/document/d/{doc_id}/edit",
         }
     except Exception as e:
-        logger.error(f"Error creating Google Doc: {e}")
-        return {}
+        logger.error(f"Error creating Google Doc: {e}", exc_info=True)
+        raise
 
 
 async def find_relevant_attachments(job_description: str) -> List[str]:
     """
     Finds relevant attachments from a Google Drive folder based on job description keywords.
     """
-    credentials = get_google_credentials()
-    drive_service = build("drive", "v3", credentials=credentials)
     folder_id = settings.google_drive_folder_id
 
     if not folder_id:
@@ -71,10 +76,11 @@ async def find_relevant_attachments(job_description: str) -> List[str]:
     keywords = {word.lower() for word in job_description.split()}
     
     try:
-        results = await asyncio.to_thread(drive_service.files().list(
-            q=f"'{folder_id}' in parents",
-            fields="files(id, name)"
-        ).execute)
+        results = await asyncio.to_thread(
+            google_service_manager.drive_service.files()
+            .list(q=f"'{folder_id}' in parents", fields="files(id, name)")
+            .execute
+        )
         
         items = results.get("files", [])
         relevant_attachments = []
@@ -85,8 +91,8 @@ async def find_relevant_attachments(job_description: str) -> List[str]:
         
         return relevant_attachments
     except Exception as e:
-        logger.error(f"Error searching for attachments in Google Drive: {e}")
-        return []
+        logger.error(f"Error searching for attachments in Google Drive: {e}", exc_info=True)
+        raise
 
 
 
