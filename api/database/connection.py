@@ -6,7 +6,7 @@ from sqlalchemy.orm import declarative_base
 import asyncio
 
 from shared.config import settings
-from shared.utils import setup_logging
+from shared.logger import setup_logging
 
 logger = setup_logging("database")
 
