@@ -47,13 +47,42 @@ async def main():
     Main function to orchestrate the execution of tasks.
     """
     logging.info("Starting task orchestration.")
-    tasks_file = Path('specifications/tasks.md')
+    tasks_file = Path(__file__).parent.parent / 'specifications/tasks.md'
     tasks = parse_tasks_from_markdown(tasks_file)
     
     if not tasks:
         logging.info("No new tasks to execute.")
         return
 
+    orchestrator = await DirectorOrchestrator.create()
+    workflow_executions = []
+
+    for task in tasks:
+        workflow_id = f"task_{task['task_number']}"
+        workflow_def = WorkflowDefinition(
+            id=workflow_id,
+            name=task['title'],
+            description=task['description'],
+            steps=[
+                WorkflowStep(
+                    id=f"step_{task['task_number']}",
+                    name=f"Execute {task['title']}",
+                    action="execute_task",
+                    parameters={"task_details": task}
+                )
+            ],
+            parallel_execution=True
+        )
+        await orchestrator.create_workflow(workflow_def)
+        workflow_executions.append(orchestrator.execute_workflow(workflow_id))
+
+    results = await asyncio.gather(*workflow_executions, return_exceptions=True)
+
+    for result in results:
+        if isinstance(result, Exception):
+            logging.error(f"Workflow execution failed: {result}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())
+
