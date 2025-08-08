@@ -187,11 +187,19 @@ class ApplicationSubmissionRequest(BaseModel):
 
 class SystemStatusResponse(BaseModel):
     automation_enabled: bool
+    is_paused: bool = False
     jobs_in_queue: int
     applications_today: int
     daily_limit: int
     success_rate: Optional[Decimal] = None
     last_application: Optional[datetime] = None
+
+
+class ApplicationStats(BaseModel):
+    total_submitted: int
+    submitted_today: int
+    submission_success_rate: float
+    average_processing_time: float
 
 
 class JobListResponse(BaseModel):
