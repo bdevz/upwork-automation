@@ -1,4 +1,3 @@
-
 """
 Unit tests for the GoogleService class.
 """
@@ -147,6 +146,6 @@ class TestGoogleService(unittest.TestCase):
 
         mock_sheets_service.spreadsheets().values().append.assert_called_once()
 
+
 if __name__ == "__main__":
     unittest.main()
-
