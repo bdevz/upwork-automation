@@ -1,11 +1,6 @@
 """
 Integration test for the ApplicationSubmissionService.
 """
-import asyncio
-import pytest
-from unittest.mock import AsyncMock, MagicMock
-
-from shared.models import Job, Proposal, JobStatus, JobType
 from browser_automation.application_submission_service import (
     ApplicationSubmissionService,
 )
