@@ -1,4 +1,5 @@
 import pytest
+import pytest_asyncio
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
@@ -7,14 +8,14 @@ import os
 # Define the test database URL
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://ardan_user:ardan_pass@localhost:5432/ardan_automation")
 
-@pytest.fixture(scope="module")
+@pytest_asyncio.fixture(scope="module")
 async def async_engine():
     """Create an async engine for the tests."""
     engine = create_async_engine(DATABASE_URL, echo=True)
     yield engine
     await engine.dispose()
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def db_session(async_engine):
     """Create a new database session for each test."""
     async_session = sessionmaker(
