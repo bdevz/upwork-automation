@@ -98,6 +98,43 @@ class WorkflowExecution:
     result: Optional[Dict[str, Any]] = None
 
 
+
+class WorkflowMonitor:
+    """Monitors workflow outcomes and triggers pauses on high failure rates."""
+
+    def __init__(self, failure_threshold: float, pause_duration: int, window_size: int = 100):
+        self.failure_threshold = failure_threshold
+        self.pause_duration = pause_duration
+        self.window_size = window_size
+        self.recent_steps = deque(maxlen=window_size)
+        self.is_paused = False
+        self.pause_until = 0.0
+
+    def record_step_completion(self, step_status: str):
+        """Record the completion status of a workflow step."""
+        self.recent_steps.append(step_status == 'failed')
+
+    def check_for_pause(self):
+        """Check if the system should be paused due to high failure rates."""
+        if len(self.recent_steps) < self.window_size:
+            return
+
+        failure_rate = sum(self.recent_steps) / len(self.recent_steps)
+        if failure_rate >= self.failure_threshold:
+            self.is_paused = True
+            self.pause_until = asyncio.get_event_loop().time() + self.pause_duration
+            logger.warning(f"High failure rate detected ({failure_rate:.2f}). Pausing for {self.pause_duration} seconds.")
+
+    async def manage_pause(self):
+        """Manage the pause state of the system."""
+        if self.is_paused:
+            now = asyncio.get_event_loop().time()
+            if now < self.pause_until:
+                await asyncio.sleep(self.pause_until - now)
+            self.is_paused = False
+            logger.info("System pause has ended. Resuming operations.")
+
+
 class DirectorOrchestrator:
     """Main orchestrator for managing multiple browser sessions and parallel workflows"""
     
