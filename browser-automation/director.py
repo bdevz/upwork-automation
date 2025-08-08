@@ -527,6 +527,8 @@ class DirectorOrchestrator:
                 step.result = result
                 step.status = StepStatus.COMPLETED
                 step.completed_at = datetime.utcnow()
+            self.workflow_monitor.record_step_completion(step.status.value)
+
                 completed_steps.add(step.id)
                 step_results[step.id] = result
                 
@@ -539,6 +541,8 @@ class DirectorOrchestrator:
                 step.status = StepStatus.FAILED
                 step.error_message = str(e)
                 step.completed_at = datetime.utcnow()
+            self.workflow_monitor.record_step_completion(step.status.value)
+
                 
                 # Handle step failure
                 if step.retry_count < step.max_retries:
@@ -615,6 +619,8 @@ class DirectorOrchestrator:
                             step.result = result
                             step.status = StepStatus.COMPLETED
                             step.completed_at = datetime.utcnow()
+            self.workflow_monitor.record_step_completion(step.status.value)
+
                             completed_steps.add(step.id)
                             step_results[step.id] = result
                             
@@ -624,6 +630,8 @@ class DirectorOrchestrator:
                             step.status = StepStatus.FAILED
                             step.error_message = str(e)
                             step.completed_at = datetime.utcnow()
+            self.workflow_monitor.record_step_completion(step.status.value)
+
                             
                             # Handle step failure
                             if step.retry_count < step.max_retries:
