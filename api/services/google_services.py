@@ -104,3 +104,80 @@ class GoogleService:
 
     def get_google_drive_folder_id(self) -> Optional[str]:
         """Returns the Google Drive folder ID from settings."""
+        return settings.google_drive_folder_id
+
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    def create_doc_from_template(self, template_id: str, title: str, folder_id: str) -> Optional[str]:
+        """
+        Creates a new Google Doc from a template.
+
+        Args:
+            template_id (str): The ID of the template document.
+            title (str): The title of the new document.
+            folder_id (str): The ID of the folder to create the document in.
+
+        Returns:
+            Optional[str]: The ID of the new document, or None if creation fails.
+        """
+        try:
+            drive_service = self.get_drive_service()
+            body = {"name": title, "parents": [folder_id]}
+            doc = drive_service.files().copy(fileId=template_id, body=body).execute()
+            logger.info(f"Document '{title}' created with ID: {doc.get('id')}")
+            return doc.get("id")
+        except Exception as e:
+            logger.error(f"Failed to create document from template: {e}")
+            return None
+
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    def update_doc_content(self, doc_id: str, content: List[Dict[str, Any]]):
+        """
+        Updates the content of a Google Doc.
+
+        Args:
+            doc_id (str): The ID of the document to update.
+            content (List[Dict[str, Any]]): A list of requests to update the document.
+        """
+        try:
+            docs_service = self.get_docs_service()
+            docs_service.documents().batchUpdate(documentId=doc_id, body={"requests": content}).execute()
+            logger.info(f"Document {doc_id} updated successfully.")
+        except Exception as e:
+            logger.error(f"Failed to update document {doc_id}: {e}")
+
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    def create_spreadsheet(self, title: str, folder_id: str) -> Optional[str]:
+        """
+        Creates a new Google Sheet.
+
+        Args:
+            title (str): The title of the new spreadsheet.
+            folder_id (str): The ID of the Google Drive folder to create the sheet in.
+
+        Returns:
+            Optional[str]: The ID of the new spreadsheet, or None if creation fails.
+        """
+        try:
+            sheets_service = self.get_sheets_service()
+            spreadsheet = {"properties": {"title": title}}
+            sheet = (
+                sheets_service.spreadsheets()
+                .create(body=spreadsheet, fields="spreadsheetId")
+                .execute()
+            )
+            sheet_id = sheet.get("spreadsheetId")
+            drive_service = self.get_drive_service()
+            drive_service.files().update(
+                fileId=sheet_id, addParents=folder_id, removeParents="root"
+            ).execute()
+            logger.info(f"Spreadsheet '{title}' created with ID: {sheet_id}")
+            return sheet_id
+        except Exception as e:
+            logger.error(f"Failed to create spreadsheet: {e}")
+            return None
+
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    def append_to_sheet(self, spreadsheet_id: str, range_name: str, values: List[List[Any]]):
+        """
+        Appends data to a Google Sheet.
+
