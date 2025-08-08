@@ -45,6 +45,22 @@ async def update_system_config(
     return {"message": "Configuration updated"}
 
 
+
+@router.get("/config/safety", response_model=SafetyConfig)
+async def get_safety_config():
+    """Get current safety configuration"""
+    return SafetyConfig()
+
+
+@router.put("/config/safety", response_model=SafetyConfig)
+async def update_safety_config(config: SafetyConfig):
+    """Update safety configuration"""
+    # In a real application, this would update the config and restart services
+    logger.info(f"Updating safety config to: {config.dict()}")
+    # For now, we just return the new config
+    return config
+
+
 @router.get("/health")
 async def system_health():
     """Comprehensive system health check"""
