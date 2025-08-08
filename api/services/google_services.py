@@ -1,6 +1,7 @@
 """
 Service for interacting with Google Workspace APIs (Docs and Drive).
 """
+import asyncio
 import json
 from typing import Dict, List
 
@@ -42,7 +43,7 @@ async def create_proposal_doc(title: str, content: str) -> Dict[str, str]:
     }
 
     try:
-        doc = docs_service.documents().create(body=document).execute()
+        doc = await asyncio.to_thread(docs_service.documents().create(body=document).execute)
         doc_id = doc.get("documentId")
         return {
             "google_doc_id": doc_id,
@@ -70,10 +71,10 @@ async def find_relevant_attachments(job_description: str) -> List[str]:
     keywords = {word.lower() for word in job_description.split()}
     
     try:
-        results = drive_service.files().list(
+        results = await asyncio.to_thread(drive_service.files().list(
             q=f"'{folder_id}' in parents",
             fields="files(id, name)"
-        ).execute()
+        ).execute)
         
         items = results.get("files", [])
         relevant_attachments = []
@@ -86,5 +87,6 @@ async def find_relevant_attachments(job_description: str) -> List[str]:
     except Exception as e:
         logger.error(f"Error searching for attachments in Google Drive: {e}")
         return []
+
 
 
