@@ -10,7 +10,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from browser_automation.director import (
+from browser_automation.director import (\n    WorkflowMonitor, ComplianceManager,
     DirectorOrchestrator, WorkflowDefinition, WorkflowStep, WorkflowExecution,
     WorkflowStatus, StepStatus, WorkflowPriority,
     create_job_discovery_workflow, create_proposal_submission_workflow
@@ -579,4 +579,51 @@ class TestWorkflowStepRetry:
 
 
 if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
+    pytest.main([__file__, "-v"])\n\n
+class TestWorkflowMonitor:
+    """Test cases for WorkflowMonitor"""
+
+    @pytest.mark.asyncio
+    async def test_record_step_completion(self):
+        """Test that step completions are recorded correctly."""
+        monitor = WorkflowMonitor(failure_threshold=0.5, pause_duration=60, window_size=10)
+        monitor.record_step_completion('completed')
+        monitor.record_step_completion('failed')
+        assert len(monitor.recent_steps) == 2
+        assert monitor.recent_steps[0] is False
+        assert monitor.recent_steps[1] is True
+
+    @pytest.mark.asyncio
+    async def test_check_for_pause_triggers(self):
+        """Test that a pause is triggered when the failure rate exceeds the threshold."""
+        monitor = WorkflowMonitor(failure_threshold=0.5, pause_duration=60, window_size=4)
+        monitor.record_step_completion('completed')
+        monitor.record_step_completion('failed')
+        monitor.record_step_completion('failed')
+        monitor.record_step_completion('failed')
+        monitor.check_for_pause()
+        assert monitor.is_paused is True
+        assert monitor.pause_until > asyncio.get_event_loop().time()
+
+    @pytest.mark.asyncio
+    async def test_check_for_pause_no_trigger(self):
+        """Test that a pause is not triggered when the failure rate is below the threshold."""
+        monitor = WorkflowMonitor(failure_threshold=0.5, pause_duration=60, window_size=4)
+        monitor.record_step_completion('completed')
+        monitor.record_step_completion('completed')
+        monitor.record_step_completion('failed')
+        monitor.record_step_completion('completed')
+        monitor.check_for_pause()
+        assert monitor.is_paused is False
+
+    @pytest.mark.asyncio
+    async def test_manage_pause(self):
+        """Test that the system waits during a pause."""
+        monitor = WorkflowMonitor(failure_threshold=0.5, pause_duration=1, window_size=2)
+        monitor.is_paused = True
+        monitor.pause_until = asyncio.get_event_loop().time() + 0.1
+        start_time = time.monotonic()
+        await monitor.manage_pause()
+        duration = time.monotonic() - start_time
+        assert duration >= 0.1
+        assert monitor.is_paused is False
