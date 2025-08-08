@@ -26,22 +26,25 @@ const columns: GridColDef[] = [
   },
 ];
 
-const rows = [
-  { id: 1, title: 'Senior Frontend Developer', status: 'Applied', created_at: new Date().toISOString() },
-  { id: 2, title: 'Full Stack Engineer', status: 'Pending', created_at: new Date().toISOString() },
-  { id: 3, title: 'Backend Developer', status: 'Applied', created_at: new Date().toISOString() },
-  { id: 4, title: 'DevOps Engineer', status: 'Rejected', created_at: new Date().toISOString() },
-  { id: 5, title: 'UI/UX Designer', status: 'Pending', created_at: new Date().toISOString() },
-];
+interface Job {
+  id: number;
+  title: string;
+  status: string;
+  created_at: string;
+}
 
-const JobsPage: React.FC = () => {
+interface JobsPageProps {
+  jobs: Job[];
+}
+
+const JobsPage: React.FC<JobsPageProps> = ({ jobs }) => {
   return (
     <Box sx={{ height: 400, width: '100%' }}>
       <Typography variant="h4" gutterBottom>
         Jobs
       </Typography>
       <DataGrid
-        rows={rows}
+        rows={jobs}
         columns={columns}
         initialState={{
           pagination: {
