@@ -11,6 +11,7 @@ import Applications from './pages/Applications';
 import Settings from './pages/Settings';
 import Analytics from './pages/Analytics';
 import Controls from './pages/Controls';
+import JobDetailPage from './pages/JobDetail';
 
 // Create theme
 const theme = createTheme({
@@ -71,6 +72,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/jobs" element={<Jobs jobs={jobs} />} />
+              <Route path="/jobs/:id" element={<JobDetailPage />} />
               <Route path="/applications" element={<Applications />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/analytics" element={<Analytics />} />
