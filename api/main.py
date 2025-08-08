@@ -2,12 +2,14 @@
 FastAPI main application for Ardan Automation System
 """
 from contextlib import asynccontextmanager
+import json
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
 
 from shared.config import settings, validate_config
+from services.google_services import GoogleService
 from shared.utils import setup_logging
 from database.connection import init_db, close_db
 from routers import jobs, proposals, applications, browser, system, metrics
@@ -31,6 +33,21 @@ async def lifespan(app: FastAPI):
         # Initialize database
         await init_db()
         logger.info("Database initialized successfully")
+
+        # Initialize Google Service
+        if settings.google_credentials:
+            try:
+                creds_info = json.loads(settings.google_credentials)
+                scopes = [
+                    "https://www.googleapis.com/auth/drive",
+                    "https://www.googleapis.com/auth/documents",
+                    "https://www.googleapis.com/auth/spreadsheets",
+                ]
+                app.state.google_service = GoogleService(credentials_info=creds_info, scopes=scopes)
+                logger.info("Google Service initialized successfully")
+            except Exception as e:
+                logger.error(f"Failed to initialize Google Service: {e}")
+                app.state.google_service = None
         
         logger.info("API startup complete")
         yield
