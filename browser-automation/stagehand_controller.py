@@ -12,7 +12,7 @@ from playwright.async_api import Page, Browser, BrowserContext
 from stagehand import Stagehand, StagehandConfig
 
 from shared.config import BrowserAutomationConfig, settings
-from shared.utils import setup_logging, retry_async
+from shared.logger import setup_logging
 from browserbase_client import BrowserbaseClient
 
 logger = setup_logging("stagehand-controller")
