@@ -80,7 +80,8 @@ class Proposal(BaseModel):
     generated_at: Optional[datetime] = None
     submitted_at: Optional[datetime] = None
     status: ProposalStatus = ProposalStatus.DRAFT
-    quality_score: Optional[Decimal] = None
+    quality_score: Optional[float] = None
+    optimization_suggestions: Optional[List[str]] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
