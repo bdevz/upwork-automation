@@ -1,6 +1,7 @@
 import React from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { Box, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -8,7 +9,9 @@ const columns: GridColDef[] = [
     field: 'title',
     headerName: 'Title',
     width: 300,
-    editable: false,
+    renderCell: (params: GridRenderCellParams) => (
+      <Link to={`/jobs/${params.id}`}>{params.value}</Link>
+    ),
   },
   {
     field: 'status',
