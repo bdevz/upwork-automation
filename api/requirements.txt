@@ -16,8 +16,8 @@ httpx==0.25.2
 aiohttp==3.9.1
 
 # Data validation and serialization
-pydantic==2.5.0
-pydantic-settings==2.1.0
+pydantic==2.7.1
+pydantic-settings==2.3.0
 
 # Browser automation
 browserbase==0.3.0
