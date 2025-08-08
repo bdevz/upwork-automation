@@ -181,3 +181,25 @@ class GoogleService:
         """
         Appends data to a Google Sheet.
 
+        Args:
+            spreadsheet_id (str): The ID of the spreadsheet.
+            range_name (str): The A1 notation of the range to append to (e.g., 'Sheet1!A1').
+            values (List[List[Any]]): The data to append.
+        """
+        try:
+            sheets_service = self.get_sheets_service()
+            body = {"values": values}
+            result = (
+                sheets_service.spreadsheets()
+                .values()
+                .append(
+                    spreadsheetId=spreadsheet_id,
+                    range=range_name,
+                    valueInputOption="RAW",
+                    body=body,
+                )
+                .execute()
+            )
+            logger.info(f"{result.get('updates').get('updatedCells')} cells appended.")
+        except Exception as e:
+            logger.error(f"Failed to append data to spreadsheet {spreadsheet_id}: {e}")
