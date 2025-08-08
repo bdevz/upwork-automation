@@ -7,7 +7,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Union
 from dataclasses import dataclass
 
-from shared.utils import setup_logging, retry_async
+from shared.logger import setup_logging
 
 logger = setup_logging("stagehand-error-handler")
 
