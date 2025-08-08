@@ -138,14 +138,13 @@ class BrowserSession(BaseModel):
 
 
 class PerformanceMetric(BaseModel):
-    id: Optional[UUID] = None
-    metric_type: str  # 'application_success', 'response_rate', 'hire_rate'
-    metric_value: Decimal
-    time_period: str  # 'daily', 'weekly', 'monthly'
-    date_recorded: datetime
+    id: Optional[int] = None
+    userId: str
+    event_type: str
+    timestamp: datetime
     metadata: Optional[dict] = None
-    created_at: Optional[datetime] = None
-
+    class Config:
+        orm_mode = True
 
 class TaskQueue(BaseModel):
     id: Optional[UUID] = None
