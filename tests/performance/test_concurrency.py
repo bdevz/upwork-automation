@@ -1,4 +1,26 @@
 import pytest
+import pytest
+import time
+
+def simulate_user_session(session_id):
+    """
+    Simulates a user session performing a series of actions.
+    In a real test, this would involve making requests to the application.
+    """
+    print(f"Starting session {session_id}")
+    # Simulate some work
+    time.sleep(0.01)
+    print(f"Finishing session {session_id}")
+
+def test_concurrent_sessions(benchmark):
+    """
+    Tests the system's performance with concurrent user sessions.
+    """
+    # The `benchmark` fixture is provided by `pytest-benchmark`
+    # It will run the `simulate_user_session` function multiple times
+    # and measure its performance.
+    benchmark(simulate_user_session, session_id=1)
+
 import asyncio
 
 async def simulate_user_session(session_id):
@@ -21,3 +43,4 @@ async def test_concurrent_sessions(benchmark):
         await asyncio.gather(*tasks)
 
     benchmark(run_sessions)
+
