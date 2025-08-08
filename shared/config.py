@@ -145,6 +145,9 @@ class SafetyConfig:
     RESPECT_ROBOTS_TXT = True
     USE_REALISTIC_USER_AGENTS = True
     IMPLEMENT_BACKOFF_ON_ERRORS = True
+
+    # Stealth Settings
+    USER_AGENT_ROTATION = True
     
     # Monitoring
     TRACK_SUCCESS_RATES = True
