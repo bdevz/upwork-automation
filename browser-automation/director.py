@@ -8,7 +8,11 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any, Callable, Union
 from dataclasses import dataclass, field
 from enum import Enum
-from contextlib import asynccontextmanager
+\1
+from urllib.parse import urlparse
+from urllib.robotparser import RobotFileParser
+import aiohttp
+
 
 from shared.config import BrowserAutomationConfig, settings, SafetyConfig
 from shared.utils import setup_logging, retry_async, AsyncRateLimiter
@@ -133,6 +137,44 @@ class WorkflowMonitor:
                 await asyncio.sleep(self.pause_until - now)
             self.is_paused = False
             logger.info("System pause has ended. Resuming operations.")
+
+
+
+class ComplianceManager:
+    """Manages compliance with platform policies, like robots.txt."""
+
+    def __init__(self, respect_robots_txt: bool = True):
+        self.respect_robots_txt = respect_robots_txt
+        self._robot_parsers = {}
+
+    async def _get_robot_parser(self, domain: str) -> RobotFileParser:
+        """Get or create a robot parser for a given domain."""
+        if domain not in self._robot_parsers:
+            parser = RobotFileParser()
+            robots_url = f"http://{domain}/robots.txt"
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(robots_url) as response:
+                        if response.status == 200:
+                            text = await response.text()
+                            parser.parse(text.splitlines())
+                        else:
+                            parser.allow_all = True
+            except Exception as e:
+                logger.warning(f"Could not fetch or parse robots.txt for {domain}: {e}")
+                parser.allow_all = True
+            self._robot_parsers[domain] = parser
+        return self._robot_parsers[domain]
+
+    async def can_fetch(self, url: str, user_agent: str = "*") -> bool:
+        """Check if a URL can be fetched according to robots.txt."""
+        if not self.respect_robots_txt:
+            return True
+
+        parsed_url = urlparse(url)
+        domain = parsed_url.netloc
+        parser = await self._get_robot_parser(domain)
+        return parser.can_fetch(user_agent, url)
 
 
 class DirectorOrchestrator:
