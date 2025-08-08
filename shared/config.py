@@ -134,6 +134,12 @@ class SafetyConfig:
     MAX_DAILY_APPLICATIONS = 30
     MAX_HOURLY_APPLICATIONS = 5
     MIN_TIME_BETWEEN_APPLICATIONS = 300  # seconds (5 minutes)
+    RATE_LIMIT_JITTER = 0.2  # 20% jitter
+
+    # Gradual Scaling
+    INITIAL_RATE_LIMIT = 1.0  # requests per second
+    TARGET_RATE_LIMIT = 5.0  # requests per second
+    RATE_INCREMENT_INTERVAL = 3600  # seconds (1 hour)
     
     # Platform Compliance
     RESPECT_ROBOTS_TXT = True
