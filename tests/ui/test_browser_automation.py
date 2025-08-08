@@ -1,4 +1,35 @@
 import pytest
+import pytest
+from playwright.sync_api import sync_playwright, Page
+from pathlib import Path
+
+@pytest.fixture(scope="module")
+def browser():
+    """Fixture to launch a browser for the test module."""
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        yield browser
+        browser.close()
+
+def test_browser_login_and_apply(browser):
+    """
+    Tests the UI flow for logging in and applying for a job using mock HTML pages.
+    """
+    page = browser.new_page()
+    
+    # Test the login page
+    login_page_path = Path(__file__).parent / "mock_pages" / "login.html"
+    page.goto(f"file://{login_page_path.resolve()}")
+    page.fill("#username", "testuser")
+    page.fill("#password", "password")
+    page.click("button[type='submit']")
+    
+    # Test the job application page
+    job_post_page_path = Path(__file__).parent / "mock_pages" / "job_post.html"
+    page.goto(f"file://{job_post_page_path.resolve()}")
+    page.click("#apply-button")
+    
+    page.close()
 from unittest.mock import MagicMock
 import os
 
@@ -39,3 +70,4 @@ def test_browser_login_and_apply():
 
     # 2. Navigate to a job post and simulate applying
     browser.navigate("tests/ui/mock_pages/job_post.html")
+
