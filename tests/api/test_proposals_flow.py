@@ -56,14 +56,14 @@ async def test_generate_proposal_content(mock_openai_client):
 
 @pytest.mark.unit
 @patch("api.services.google_services.build")
-def test_create_proposal_doc(mock_build):
+async def test_create_proposal_doc(mock_build):
     from api.services.google_services import create_proposal_doc
 
     mock_docs_service = mock_build.return_value
     mock_docs_service.documents().create().execute.return_value = {
         "documentId": "test_doc_id"
     }
-    result = create_proposal_doc("Test Title", "Test Content")
+    result = await create_proposal_doc("Test Title", "Test Content")
     assert result["google_doc_id"] == "test_doc_id"
 
 
