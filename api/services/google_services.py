@@ -64,11 +64,27 @@ async def find_relevant_attachments(job_description: str) -> List[str]:
     if not folder_id:
         logger.warning("Google Drive folder ID is not configured.")
         return []
-
+    
+    # Simple keyword extraction: split description into words and use unique, lowercased words.
+    # A more advanced implementation would use NLP for better keyword extraction.
+    keywords = {word.lower() for word in job_description.split()}
+    
     try:
-        # This is a placeholder for a more sophisticated keyword matching implementation
-        return ["drive_file_id_1", "drive_file_id_2"]
+        results = drive_service.files().list(
+            q=f"'{folder_id}' in parents",
+            fields="files(id, name)"
+        ).execute()
+        
+        items = results.get("files", [])
+        relevant_attachments = []
+        for item in items:
+            file_name = item.get("name", "").lower()
+            if any(keyword in file_name for keyword in keywords):
+                relevant_attachments.append(item.get("id"))
+        
+        return relevant_attachments
     except Exception as e:
         logger.error(f"Error searching for attachments in Google Drive: {e}")
         return []
+
 
