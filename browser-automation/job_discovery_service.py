@@ -13,7 +13,7 @@ import uuid
 
 from shared.models import Job, JobStatus, JobType, JobSearchParams
 from shared.config import settings
-from shared.utils import setup_logging, retry_async
+from shared.logger import setup_logging
 from stagehand_controller import StagehandController, ArdanJobSearchController
 from mcp_client import MCPClient
 from director import DirectorOrchestrator
