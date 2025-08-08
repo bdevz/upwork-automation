@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 from uuid import UUID
+import random
 
 import asyncio
 from functools import wraps
@@ -300,3 +301,52 @@ class RateLimiter:
         oldest_call = min(self.calls)
         next_available = oldest_call + timedelta(seconds=self.time_window)
         return next_available - datetime.utcnow()
+
+
+class AsyncRateLimiter:
+    """Asynchronous rate limiter with jitter and dynamic updates."""
+
+    def __init__(self, rate_limit: float, jitter: float = 0.1):
+        self.rate_limit = rate_limit
+        self.jitter = jitter
+        self._last_call_time = 0.0
+
+    async def wait(self):
+        """Wait until the next call can be made."""
+        now = asyncio.get_event_loop().time()
+        time_since_last_call = now - self._last_call_time
+
+        if self.rate_limit <= 0:
+            return
+
+        required_delay = 1.0 / self.rate_limit
+        if time_since_last_call < required_delay:
+            delay = required_delay - time_since_last_call
+            if self.jitter > 0:
+                jitter_amount = random.uniform(-self.jitter, self.jitter) * required_delay
+                delay += jitter_amount
+
+            if delay > 0:
+                await asyncio.sleep(delay)
+
+        self._last_call_time = asyncio.get_event_loop().time()
+
+    def update_rate_limit(self, new_rate_limit: float):
+        """Update the rate limit dynamically."""
+        if new_rate_limit > 0:
+            self.rate_limit = new_rate_limit
+
+    def update_jitter(self, new_jitter: float):
+        """Update the jitter dynamically."""
+        if 0 <= new_jitter <= 1.0:
+            self.jitter = new_jitter
+
+    async def __aenter__(self):
+        await self.wait()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+
+
