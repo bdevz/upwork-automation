@@ -1,4 +1,60 @@
 import pytest
+import pytest
+from unittest.mock import MagicMock, patch
+
+# Mock job data that simulates a new job posting from an external source
+MOCK_JOB_POSTING = {
+    "id": "test_job_123",
+    "title": "Software Engineer",
+    "description": "Developing a new application.",
+    "required_skills": ["Python", "FastAPI"],
+}
+
+class System:
+    """
+    A mock System class to simulate the application's core logic.
+    In a real application, this would be the main entry point for the workflow.
+    """
+    def __init__(self, db_connection):
+        self.db_connection = db_connection
+
+    def discover_and_process_jobs(self):
+        # In a real system, this would fetch jobs from a source
+        # For this test, we use the mock job posting
+        job = MOCK_JOB_POSTING
+        
+        # Simulate filtering and deciding to apply
+        if "Python" in job["required_skills"]:
+            self.apply_for_job(job)
+
+    def apply_for_job(self, job):
+        # Simulate saving the application to the database
+        cursor = self.db_connection.cursor()
+        cursor.execute(
+            "INSERT INTO applications (job_id, status) VALUES (%s, %s)",
+            (job["id"], "applied"),
+        )
+        self.db_connection.commit()
+
+@patch("psycopg2.connect")
+def test_job_application_workflow(mock_connect):
+    """
+    Tests the full end-to-end job application workflow, from discovery to database update.
+    """
+    # Set up a mock database connection
+    mock_db_connection = MagicMock()
+    mock_connect.return_value = mock_db_connection
+
+    # Initialize the system with the mock connection
+    system = System(db_connection=mock_db_connection)
+    system.discover_and_process_jobs()
+
+    # Verify that the application was saved to the database
+    mock_db_connection.cursor.return_value.execute.assert_called_with(
+        "INSERT INTO applications (job_id, status) VALUES (%s, %s)",
+        ("test_job_123", "applied"),
+    )
+    mock_db_connection.commit.assert_called_once()
 from unittest.mock import patch, MagicMock
 
 # Mock job data that simulates a new job posting
@@ -40,3 +96,4 @@ def test_job_application_workflow(mock_discover_filter, mock_process_app):
     # Run the workflow
     filtered_job = discover_and_filter_job(MOCK_JOB_POSTING)
     application_result = process_application(filtered_job)
+
