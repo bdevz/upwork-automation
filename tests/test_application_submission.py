@@ -3,10 +3,6 @@ Integration test for the ApplicationSubmissionService.
 """
 import asyncio
 import pytest
-import sys
-import os
-
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from unittest.mock import AsyncMock, MagicMock
 
 from shared.models import Job, Proposal, JobStatus, JobType
@@ -125,4 +121,5 @@ async def test_submit_application_workflow(
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
 
