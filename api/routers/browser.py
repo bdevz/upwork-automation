@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.connection import get_db
-from shared.utils import setup_logging
+from shared.logger import setup_logging
 
 logger = setup_logging("browser-router")
 router = APIRouter()

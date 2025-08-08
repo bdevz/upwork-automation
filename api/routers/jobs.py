@@ -8,7 +8,7 @@ from uuid import UUID
 
 from database.connection import get_db
 from shared.models import Job, JobListResponse, JobSearchParams
-from shared.utils import setup_logging
+from shared.logger import setup_logging
 
 logger = setup_logging("jobs-router")
 router = APIRouter()
