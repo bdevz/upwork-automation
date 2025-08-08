@@ -151,6 +151,11 @@ class SafetyConfig:
     ALERT_ON_LOW_SUCCESS_RATE = True
     SUCCESS_RATE_THRESHOLD = 0.1  # 10%
     
+    # Platform Monitoring
+    MONITORING_WINDOW_SIZE = 50  # Number of steps to monitor
+    FAILURE_RATE_THRESHOLD = 0.5  # 50%
+    PAUSE_DURATION_ON_HIGH_FAILURE_RATE = 600  # 10 minutes
+    
     # Emergency Controls
     ENABLE_EMERGENCY_STOP = True
     AUTO_PAUSE_ON_ERRORS = True
