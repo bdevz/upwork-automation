@@ -1,4 +1,43 @@
 import pytest
+import pytest
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
+from shared.models import Base
+from shared.config import get_config
+
+DATABASE_URL = get_config("DATABASE_URL")
+
+@pytest.fixture(scope="module")
+def engine():
+    """Create a new database engine for the test module."""
+    return create_engine(DATABASE_URL)
+
+@pytest.fixture(scope="module")
+def tables(engine):
+    """Create database tables before tests run and drop them after."""
+    Base.metadata.create_all(bind=engine)
+    yield
+    Base.metadata.drop_all(bind=engine)
+
+@pytest.fixture
+def db_session(engine, tables):
+    """Create a new database session for each test."""
+    connection = engine.connect()
+    transaction = connection.begin()
+    Session = sessionmaker(bind=connection)
+    session = Session()
+    yield session
+    session.close()
+    transaction.rollback()
+    connection.close()
+
+def test_database_connection(db_session):
+    """Tests the basic database connection and query execution."""
+    try:
+        result = db_session.execute(text("SELECT 1"))
+        assert result.scalar_one() == 1, "Database connection check failed"
+    except Exception as e:
+        pytest.fail(f"Database connection failed with an exception: {e}")
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
@@ -47,4 +86,5 @@ async def test_crud_operations(db_session: AsyncSession):
     # create a test record, read it, update it, and then delete it.
     # For now, we'll just assert that the test passes.
     assert True
+
 
