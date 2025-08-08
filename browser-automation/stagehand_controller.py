@@ -671,41 +671,50 @@ class ArdanApplicationController(StagehandController):
         bid_amount: float,
         attachments: Optional[List[str]] = None
     ) -> InteractionResult:
-        """Submit a job application with proposal"""
-        
+        """Submit a job application with proposal and attachments."""
+
         # Navigate to job page
         nav_result = await self.intelligent_navigate(
-            session_id,
-            job_url,
-            NavigationStrategy.DIRECT_URL
+            session_id, job_url, NavigationStrategy.DIRECT_URL
         )
-        
+
         if not nav_result.success:
             return InteractionResult(
                 success=False,
                 action_performed="navigation_failed",
                 elements_affected=[],
-                error_message=f"Failed to navigate to job: {nav_result.error_message}"
+                error_message=f"Failed to navigate to job: {nav_result.error_message}",
             )
-        
+
         # Click apply button
         stagehand = await self.get_stagehand(session_id)
+        page = stagehand.page
         await stagehand.act("click the apply button or submit proposal button")
-        
+
         # Wait for application form to load
         await self.handle_dynamic_content(session_id, "job application form")
-        
+
         # Fill application form
-        form_data = {
-            "cover_letter": proposal_content,
-            "bid_amount": str(bid_amount)
-        }
-        
+        form_data = {"cover_letter": proposal_content, "bid_amount": str(bid_amount)}
+
         # Handle attachments if provided
         if attachments:
-            for i, attachment in enumerate(attachments):
-                form_data[f"attachment_{i}"] = attachment
-        
+            try:
+                file_input_selector = "input[type='file']"
+                logger.info(f"Attempting to upload attachments: {attachments}")
+                await page.set_input_files(
+                    file_input_selector, files=attachments, timeout=10000
+                )
+                logger.info("Successfully set input files for attachments.")
+            except Exception as e:
+                logger.error(f"Failed to upload attachments: {e}")
+                return InteractionResult(
+                    success=False,
+                    action_performed="attachment_upload_failed",
+                    elements_affected=[],
+                    error_message=f"Failed to upload attachments: {e}",
+                )
+
         # Submit application
         return await self.interact_with_form(
             session_id,
@@ -713,32 +722,30 @@ class ArdanApplicationController(StagehandController):
             submit=True,
             validation_rules={
                 "cover_letter": {"required": True, "min_length": 100},
-                "bid_amount": {"required": True}
-            }
+                "bid_amount": {"required": True},
+            },
         )
-    
+
     async def verify_submission(self, session_id: str) -> ExtractionResult:
         """Verify that the application was submitted successfully"""
-        
+
         # Wait for confirmation page/message
         await asyncio.sleep(3)
-        
+
         extraction_prompt = """
         Check if the job application was submitted successfully. Look for:
         - Success confirmation message
         - Application ID or reference number
         - Confirmation that proposal was sent
         - Any error messages or warnings
-        
+
         Return:
         - success: true/false
         - confirmation_message: The confirmation text
         - application_id: Application reference if available
         - errors: Any error messages found
         """
-        
+
         return await self.extract_content(
-            session_id,
-            extraction_prompt,
-            ExtractionType.CONFIRMATION
+            session_id, extraction_prompt, ExtractionType.CONFIRMATION
         )
